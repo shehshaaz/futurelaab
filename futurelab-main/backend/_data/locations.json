@@ -1,0 +1,74 @@
+[
+  {
+    "_id": "5d7a514b5d2c12c7449be100",
+    "pincode": "560001",
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "area": "Central Bangalore",
+    "isServiceable": true,
+    "deliveryTime": "24 hours"
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be101",
+    "pincode": "560002",
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "area": "Central Bangalore",
+    "isServiceable": true,
+    "deliveryTime": "24 hours"
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be102",
+    "pincode": "560003",
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "area": "Central Bangalore",
+    "isServiceable": true,
+    "deliveryTime": "24 hours"
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be103",
+    "pincode": "560004",
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "area": "Central Bangalore",
+    "isServiceable": true,
+    "deliveryTime": "24 hours"
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be104",
+    "pincode": "560005",
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "area": "Central Bangalore",
+    "isServiceable": true,
+    "deliveryTime": "24 hours"
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be105",
+    "pincode": "560010",
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "area": "North Bangalore",
+    "isServiceable": true,
+    "deliveryTime": "48 hours"
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be106",
+    "pincode": "560020",
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "area": "South Bangalore",
+    "isServiceable": true,
+    "deliveryTime": "48 hours"
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be107",
+    "pincode": "560030",
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "area": "East Bangalore",
+    "isServiceable": true,
+    "deliveryTime": "48 hours"
+  }
+]
