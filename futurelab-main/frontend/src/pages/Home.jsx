@@ -8,6 +8,7 @@ import MakeYourOwnPackage from "../components/MakeYourOwnPackage";
 import PromotionalCard from "../components/PromotionalCard";
 import TestimonialsSlider from "../components/TestimonialsSlider";
 import PincodeChecker from "./Pincode";
+import Carousel from "react-bootstrap/Carousel";
 
 
 const Home = () => {
@@ -41,6 +42,75 @@ const Home = () => {
   // Cart state (in real app, this would be in a global state management)
   const [cartItems, setCartItems] = useState([]);
   const [showCartNotification, setShowCartNotification] = useState(false);
+
+
+
+
+
+  // special offers carousel
+    const packages = [
+    {
+      id: 1,
+      title: "Full Body Checkup + 1 Special Profile Test FREE",
+      tests: "103 Tests",
+      price: "₹999",
+      oldPrice: "₹2299",
+      image: "/images/Tests/full-body.png",
+    },
+    {
+      id: 2,
+      title: "Comprehensive Health Package",
+      tests: "95 Tests",
+      price: "₹899",
+      oldPrice: "₹1999",
+      image: "/images/Tests/full-body.png",
+    },
+    {
+      id: 3,
+      title: "Heart Care Package",
+      tests: "110 Tests",
+      price: "₹1099",
+      oldPrice: "₹2499",
+      image: "/images/Tests/full-body.png",
+    },
+    {
+      id: 4,
+      title: "Diabetes Screening Package",
+      tests: "78 Tests",
+      price: "₹799",
+      oldPrice: "₹1799",
+      image: "/images/Tests/full-body.png",
+    },
+    {
+      id: 5,
+      title: "Senior Citizen Health Package",
+      tests: "120 Tests",
+      price: "₹1299",
+      oldPrice: "₹2999",
+      image: "/images/Tests/full-body.png",
+    },
+    {
+      id: 6,
+      title: "Women Wellness Package",
+      tests: "88 Tests",
+      price: "₹899",
+      oldPrice: "₹1999",
+      image: "/images/Tests/full-body.png",
+    },
+  ];
+
+  const [current, setCurrent] = useState(0);
+  const total = packages.length;
+
+  const nextSlide = () => {
+    setCurrent((prev) => (prev === total - 1 ? 0 : prev + 1));
+  };
+
+  const prevSlide = () => {
+    setCurrent((prev) => (prev === 0 ? total - 1 : prev - 1));
+  };
+
+  
   
 
   useEffect(() => {
@@ -165,7 +235,17 @@ const Home = () => {
       setError("Error adding item to cart. Please try again.");
     }
   };
+     const chunkedCategories = [];
+  for (let i = 0; i < categories.length; i += 6) {
+    chunkedCategories.push(categories.slice(i, i + 6));
+  }
 
+  const chunkedAds = [];
+  for (let i = 0; i < ads.length; i += 4) {
+    chunkedAds.push(ads.slice(i, i + 4));
+  }
+
+  
   const handleKnowMore = () => {
     navigate("/checkups");
   };
@@ -266,50 +346,45 @@ const Home = () => {
       )}
 
       {/* Hero Section */}
-      <section className="hero-section mb-4">
-        <div className="container-fluid p-0">
-          <div className="position-relative">
-            <img
-              src={`${process.env.PUBLIC_URL}/images/banners/banner3.png`}
-              alt="Healthcare Services - Lab Tests & Health Checkups"
-              className="w-100 img-fluid"
-              style={{
-                height: "clamp(250px, 40vw, 500px)",
-                objectFit: "cover",
-                objectPosition: "center",
-              }}
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = `${process.env.PUBLIC_URL}/images/banners/banner1.png`;
-              }}
-            />
-            <div
-              className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center"
-              style={{ background: "rgba(0,0,0,0.3)" }}
-            >
-              <div className="container">
-                <div className="row">
-                  <div className="col-lg-6 col-md-8">
-                    <h1 className="text-white display-4 fw-bold mb-3">
-                      Your Health, Our Priority
-                    </h1>
-                    <p className="text-white lead mb-4">
-                      Comprehensive health checkups and diagnostic services at
-                      your doorstep
-                    </p>
-                    <Link
-                      to="/checkups"
-                      className="btn btn-primary btn-lg mb-3"
-                    >
-                      Book Now
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+     <section className="hero-section mb-4">
+      <div className="container-fluid p-0">
+        <Carousel fade interval={3000} controls={false} indicators={false}>
+          {["banner1.png", "banner2.png", "banner3.png"].map((image, index) => (
+            <Carousel.Item key={index}>
+              <img
+                className="d-block w-100 img-fluid hero-image"
+                src={`${process.env.PUBLIC_URL}/images/banners/${image}`}
+                alt={`Banner ${index + 1}`}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = `${process.env.PUBLIC_URL}/images/banners/banner1.png`;
+                }}
+              />
+            </Carousel.Item>
+          ))}
+        </Carousel>
+      </div>
+
+      {/* Custom styles */}
+      <style>{`
+        .hero-image {
+          height: clamp(250px, 40vw, 500px);
+          object-fit: cover;
+          object-position: center;
+          border-radius: 0;
+          transition: all 0.4s ease-in-out;
+        }
+
+        /* Smaller size & rounded for mobile */
+        @media (max-width: 768px) {
+          .hero-image {
+            height: 220px;
+            border-radius: 15px;
+            margin: 10px;
+          }
+        }
+      `}</style>
+    </section>
 
       {/* Pin Code Service Availability Section */}
    {/* <section
@@ -448,7 +523,6 @@ const Home = () => {
 
 
 
-      
 <section
   className="py-16 relative overflow-hidden"
   style={{ backgroundColor: "rgb(119, 217, 207)" }}
@@ -456,46 +530,52 @@ const Home = () => {
   <div className="container mx-auto px-4 flex flex-col items-center text-center">
     {/* Heading */}
     <h2 className="text-3xl md:text-4xl font-bold text-white drop-shadow-lg mb-4">
-      Check Home Sample Collection Availability
+      Enter Your Pincode to Check Service Availability
     </h2>
     <p className="text-white/90 mb-10 max-w-xl text-lg">
-      Enter your area pincode to see if our lab services are available at your
-      location. Quick, easy, and reliable.
+      Enter your pincode
     </p>
 
     {/* Pincode Checker Card */}
-    <div
-      className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border-2 border-white/70
-                 p-6 sm:p-8 transition-transform duration-500 hover:scale-[1.02]
-                 backdrop-blur-sm"
-    >
+    <div className="w-full max-w-md bg-white rounded-xl shadow-xl border border-gray-200 p-5">
       <form className="flex flex-col sm:flex-row items-center justify-center gap-3">
         <input
           id="pincode-input"
           type="text"
           inputMode="numeric"
           pattern="\d*"
-          placeholder="Enter 6-digit pincode"
-          className="w-full sm:flex-1 px-5 py-3 rounded-xl border-2 border-gray-300 text-center text-lg 
-                     focus:outline-none focus:ring-4 focus:ring-teal-300 focus:border-teal-500
-                     transition-all duration-300 shadow-sm placeholder:text-gray-400"
+          maxLength="6"
+          placeholder="Enter 6-digit pin code"
+          className="w-full sm:flex-1 px-4 py-3 rounded-lg border border-gray-300 text-gray-700 
+                     focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-500
+                     transition-all duration-200 text-base"
         />
 
-        <button
-          type="submit"
-          className="px-8 py-3 bg-white text-teal-700 border-2 border-teal-800 rounded-xl font-semibold
-                     shadow-md hover:bg-teal-700 hover:text-white hover:shadow-lg
-                     transition-all duration-300 ease-in-out focus:ring-4 focus:ring-teal-300
-                     active:scale-95"
-        >
-          Check
-        </button>
+  <button
+    type="submit"
+    className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 
+               bg-blue-600 text-white font-semibold rounded-md shadow-md
+               hover:bg-blue-700 hover:shadow-lg active:scale-95
+               transition-all duration-200 focus:ring-4 focus:ring-blue-300"
+    style={{ minHeight: "48px" }}
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={2}
+      stroke="currentColor"
+      className="w-5 h-5"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
+      />
+    </svg>
+    Check Availability
+  </button>
       </form>
-
-      {/* Message section (example placeholder) */}
-      <div className="mt-5 text-sm text-gray-500">
-        We currently support home collection in select areas only.
-      </div>
     </div>
   </div>
 
@@ -503,6 +583,7 @@ const Home = () => {
   <div className="absolute top-0 left-0 w-40 h-40 bg-white/20 rounded-full blur-3xl animate-pulse"></div>
   <div className="absolute bottom-0 right-0 w-56 h-56 bg-white/20 rounded-full blur-3xl animate-pulse"></div>
 </section>
+
 
 
 
@@ -530,356 +611,513 @@ const Home = () => {
 
       {/* Categories Section */}
 <section className="py-5 bg-light">
-  <div className="container">
+  <div className="container"  style={{ backgroundColor: 'rgba(224, 247, 247, 0.7)' }} className="p-3 rounded-3">
     {/* Header Section */}
-    <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-5 text-center text-md-start">
-      <div>
-        <h2 className="fw-bold mb-2 text-primary">Health Checkup Packages</h2>
-        <p className="text-muted mb-0">
-          Choose from our comprehensive health packages designed for your well-being
+    {/* <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-5 text-center text-md-start">
+   <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center align-items-start bg-light p-3 rounded-3 shadow-sm">
+
+  <div>
+    <h2 className="fw-bold mb-1" style={{ color: 'rgb(0, 162, 173)' }}>
+      Money-Saving <span className="d-block">Packages</span>
+    </h2>
+    <p className="mb-0 fw-semibold" style={{ color: 'rgb(255, 128, 0)' }}>
+      Upto 75% Discount
+    </p>
+  </div>
+
+
+  <Link
+    to="/completehealth"
+    className="btn fw-semibold text-white mt-3 mt-md-0 px-4 py-2"
+    style={{
+      background: 'linear-gradient(180deg, #FFA500 0%, #FF7A00 100%)',
+      border: 'none',
+      fontSize: '1rem',
+      boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+      borderRadius: '6px',
+      whiteSpace: 'nowrap',
+    }}
+  >
+    VIEW ALL
+  </Link>
+</div>
+</div> */}
+
+  </div>
+</section>
+
+    {/* Cards Section */}
+<section className="py-5">
+  <div className="container">
+    {/* Section Header */}
+    <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">  
+      <div className="align-items-md-center ">
+        <h2 className="fw-bold mb-1"
+              style={{ color: "rgb(0, 162, 173)", fontSize: "1.5rem"}}>
+          Money-Saving Packages
+        </h2>
+        <p className="mb-0 fw-semibold" style={{ color: "rgb(255, 128, 0)" }}>
+          Upto 75% Discount
         </p>
       </div>
+ 
+
       <Link
-        className="btn btn-primary mt-3 mt-md-0 px-4 py-2 fw-semibold shadow-sm"
         to="/completehealth"
+        className="btn fw-semibold text-white mt-3 mt-md-0 px-4 py-2"
+        style={{
+          background: "linear-gradient(180deg, #FFA500 0%, #FF7A00 100%)",
+          border: "none",
+          fontSize: "1rem",
+          borderRadius: "8px",
+          boxShadow: "0 3px 8px rgba(0,0,0,0.2)",
+        }}
       >
-        View All Packages
+        VIEW ALL
       </Link>
     </div>
 
-    {/* Cards Section */}
-<div className="row g-4">
-  {categories.length > 0 ? (
-    categories.slice(0, 4).map((item, index) => (
-      <div key={index} className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
-        <Link
-          to={`/completehealth?tab=${encodeURIComponent(item.name)}`}
-          className="text-decoration-none"
-        >
-          <div
-            className="card border-0 rounded-4 overflow-hidden position-relative"
-            style={{
-              boxShadow: "0 4px 15px rgba(0,0,0,0.05)",
-              transition: "all 0.4s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-8px)";
-              e.currentTarget.style.boxShadow = "0 12px 30px rgba(0,0,0,0.15)";
-              const strip = e.currentTarget.querySelector(".title-strip");
-              if (strip) {
-                strip.style.backgroundColor = "rgb(90, 190, 180)";
-                strip.style.transform = "translateY(0)";
-                strip.style.opacity = "1";
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 4px 15px rgba(0,0,0,0.05)";
-              const strip = e.currentTarget.querySelector(".title-strip");
-              if (strip) {
-                strip.style.backgroundColor = "rgb(119, 217, 207)";
-                strip.style.transform = "translateY(10px)";
-                strip.style.opacity = "0.8";
-              }
-            }}
-          >
-            <div className="card-body text-center p-0 d-flex flex-column justify-content-start">
-              
-              {/* Image Section */}
-              <div className="position-relative overflow-hidden">
-                <img
-                  className="img-fluid w-100"
-                  src={getImageUrl(item.imagePath)}
-                  alt={item.name}
-                  style={{
-                    height: "180px",
-                    objectFit: "cover",
-                    transition: "transform 0.4s ease",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.08)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-                />
-
-                {/* Animated Title Strip */}
-                <div
-                  className="title-strip position-absolute bottom-0 w-100 py-2"
-                  style={{
-                    backgroundColor: "rgb(119, 217, 207)",
-                    color: "#004d4d",
-                    fontWeight: "600",
-                    fontSize: "1rem",
-                    transition: "all 0.4s ease",
-                    transform: "translateY(10px)",
-                    opacity: "0.9",
-                  }}
+    {/* Carousel */}
+    <Carousel
+      interval={null}
+      controls={true}
+      indicators={false}
+      nextIcon={<span className="carousel-control-next-icon" />}
+      prevIcon={<span className="carousel-control-prev-icon" />}
+      className="custom-carousel "
+    >
+      {chunkedCategories.map((group, index) => (
+        <Carousel.Item key={index}>
+          <div className="row g-3 justify-content-center">
+            {group.map((item, idx) => (
+              <div
+                key={idx}
+                className="col-6 col-sm-3 col-md-3 col-lg-3 col-xl-3"
+              >
+                <Link
+                  to={`/completehealth?tab=${encodeURIComponent(item.name)}`}
+                  className="text-decoration-none"
                 >
-                  {item.name}
-                </div>
+                  <div
+                    className="card border-0 rounded-4 overflow-hidden shadow-sm h-100 position-relative"
+                    style={{
+                      borderRadius: "14px",
+                      transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-6px)";
+                      e.currentTarget.style.boxShadow =
+                        "0 8px 20px rgba(0,0,0,0.15)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow =
+                        "0 4px 10px rgba(0,0,0,0.05)";
+                    }}
+                  >
+                    <div className="position-relative overflow-hidden rounded-top-4">
+                      <img
+                        className="img-fluid w-100"
+                        src={getImageUrl(item.imagePath)}
+                        alt={item.name}
+                        style={{
+                          height: "160px",
+                          objectFit: "cover",
+                          transition: "transform 0.3s ease",
+                          borderTopLeftRadius: "14px",
+                          borderTopRightRadius: "14px",
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.transform = "scale(1.05)")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.transform = "scale(1)")
+                        }
+                      />
+                    </div>
+                    <div
+                      className="text-center py-2 rounded-bottom-4"
+                      style={{
+                        backgroundColor: "rgb(119, 217, 207)",
+                        color: "#004d4d",
+                        fontWeight: "600",
+                        fontSize: "0.95rem",
+                      }}
+                    >
+                      {item.name}
+                    </div>
+                  </div>
+                </Link>
               </div>
-            </div>
+            ))}
           </div>
-        </Link>
+        </Carousel.Item>
+      ))}
+    </Carousel>
+
+    {/* Carousel Navigation Arrows */}
+    <style>{`
+      .custom-carousel {
+        position: relative;
+      }
+
+      /* Arrows Base Style */
+      .custom-carousel .carousel-control-prev,
+      .custom-carousel .carousel-control-next {
+        position: absolute;
+        bottom: -45px;
+        top: auto;
+        width: 42px;
+        height: 42px;
+        background-color: rgba(0, 162, 173, 0.9);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.9;
+        transition: all 0.25s ease;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Hover and Active States */
+      .custom-carousel .carousel-control-prev:hover,
+      .custom-carousel .carousel-control-next:hover {
+        background-color: rgba(0, 162, 173, 1);
+        transform: scale(1.1);
+      }
+
+      .custom-carousel .carousel-control-prev:active,
+      .custom-carousel .carousel-control-next:active {
+        transform: scale(0.9);
+        box-shadow: 0 0 12px rgba(0, 200, 255, 0.8);
+      }
+
+      /* Positioning bottom center */
+      .custom-carousel .carousel-control-prev {
+        left: calc(50% - 60px);
+      }
+
+      .custom-carousel .carousel-control-next {
+        right: calc(50% - 60px);
+      }
+
+      /* Mobile Adjustments */
+      @media (max-width: 767px) {
+        .custom-carousel .carousel-control-prev,
+        .custom-carousel .carousel-control-next {
+          width: 36px;
+          height: 36px;
+          bottom: -35px;
+        }
+        .custom-carousel img {
+          height: 120px !important;
+        }
+      }
+    `}</style>
+  </div>
+</section>
+
+
+
+
+
+
+
+
+
+ {/* Healthcare Banner Section */}
+<section className="py-4 bg-light">
+  <div className="container">
+    <div
+      className="d-flex flex-column flex-md-row align-items-center justify-content-center bg-white shadow-sm p-3 p-md-4 mx-auto"
+      style={{
+        borderRadius: "16px",
+        maxWidth: "650px",
+        background: "linear-gradient(90deg, #eafff8 0%, #d8fff0 100%)",
+      }}
+    >
+      {/* Left Side - Illustration */}
+      <div className="me-md-4 mb-3 mb-md-0 text-center">
+        <img
+          src={`${process.env.PUBLIC_URL}/images/delivery-doctor.png`}
+          alt="Home Visit Icon"
+          style={{
+            width: "120px",
+            height: "auto",
+          }}
+        />
       </div>
-    ))
-  ) : (
-    <div className="col-12">
-      <div className="text-center py-5">
-        <div className="spinner-border text-primary mb-3" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-        <h5>Loading Health Packages...</h5>
-        <p className="text-muted">
-          Please wait while we fetch the latest packages for you.
+
+      {/* Right Side - Text Content */}
+      <div className="text-center text-md-start">
+        <h5
+          className="fw-bold mb-1"
+          style={{ color: "#E53935", fontSize: "1.25rem" }}
+        >
+          Free - Home Visit
+        </h5>
+        <h4
+          className="fw-bold mb-2"
+          style={{ color: "#B71C1C", fontSize: "1.5rem" }}
+        >
+          in Bengaluru
+        </h4>
+        <p className="mb-0 fw-semibold" style={{ color: "#2E7D32" }}>
+          If Bill Amount 1k
         </p>
       </div>
     </div>
-  )}
-</div>
-
-
-
-
   </div>
+
+  <style>{`
+    /* Mobile Responsive Adjustments */
+    @media (max-width: 768px) {
+      section div.container > div {
+        flex-direction: column !important;
+        text-align: center !important;
+      }
+
+      section img {
+        width: 90px !important;
+      }
+
+      section h4 {
+        font-size: 1.25rem !important;
+      }
+
+      section h5 {
+        font-size: 1.1rem !important;
+      }
+    }
+  `}</style>
 </section>
 
-
-
-      {/* Healthcare Banner Carousel */}
-<section className="py-4 bg-light position-relative">
-  <div className="container-fluid position-relative">
-    <div className="scrolling-carousel overflow-hidden position-relative">
-      <div className="carousel-track d-flex align-items-center">
-        {/* Main banners */}
-        {[1, 2, 3].map((num, index) => (
-          <div key={index} className="flex-shrink-0 me-3">
-            <img
-              src={`${process.env.PUBLIC_URL}/images/banners/banner${num}.png`}
-              alt={`Health Banner ${num}`}
-              className="rounded shadow-sm"
-              style={{
-                width: "300px",
-                height: "200px",
-                objectFit: "cover",
-                borderRadius: "12px",
-              }}
-            />
-          </div>
-        ))}
-
-        {/* Duplicate banners for seamless infinite scroll */}
-        {[1, 2, 3].map((num, index) => (
-          <div key={`dup-${index}`} className="flex-shrink-0 me-3">
-            <img
-              src={`${process.env.PUBLIC_URL}/images/banners/banner${num}.png`}
-              alt={`Health Banner Duplicate ${num}`}
-              className="rounded shadow-sm"
-              style={{
-                width: "300px",
-                height: "200px",
-                objectFit: "cover",
-                borderRadius: "12px",
-              }}
-            />
-          </div>
-        ))}
-      </div>
-
-      {/* Gradient fade edges */}
-      <div className="fade-left"></div>
-      <div className="fade-right"></div>
-    </div>
-  </div>
-</section>
-
-<style>
-{`
-/* Base carousel */
-.scrolling-carousel {
-  position: relative;
-  overflow: hidden;
-}
-
-/* Track with animation */
-.carousel-track {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  animation: scroll-infinite 25s linear infinite;
-}
-
-/* Pause on hover (desktop only) */
-@media (hover: hover) {
-  .scrolling-carousel:hover .carousel-track {
-    animation-play-state: paused;
-  }
-}
-
-/* Smooth infinite scroll animation */
-@keyframes scroll-infinite {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-/* Gradient fades on edges */
-.fade-left,
-.fade-right {
-  position: absolute;
-  top: 0;
-  width: 100px;
-  height: 100%;
-  z-index: 10;
-  pointer-events: none;
-}
-
-.fade-left {
-  left: 0;
-  background: linear-gradient(to right, rgba(248, 249, 250, 1), rgba(248, 249, 250, 0));
-}
-
-.fade-right {
-  right: 0;
-  background: linear-gradient(to left, rgba(248, 249, 250, 1), rgba(248, 249, 250, 0));
-}
-
-/* ✅ Responsive tweaks */
-@media (max-width: 992px) {
-  .carousel-track img {
-    width: 240px !important;
-    height: 160px !important;
-  }
-  .carousel-track {
-    animation-duration: 30s;
-  }
-}
-
-@media (max-width: 576px) {
-  .carousel-track img {
-    width: 180px !important;
-    height: 120px !important;
-  }
-  .carousel-track {
-    animation-duration: 35s;
-  }
-  .fade-left, .fade-right {
-    width: 60px;
-  }
-}
-`}
-</style>
 
 
 
 
       {/* Special Offer Card */}
-      <section className="py-5">
-        <div className="container">
-          <div className="row justify-content-center">
-            <div className="col-lg-6 col-md-8">
-              <div className="card border-primary border-3 shadow-lg position-relative">
-                {/* Discount Badge */}
-                <div
-                  className="position-absolute bg-danger text-white px-3 py-1 rounded-pill fw-bold"
-                  style={{
-                    top: "15px",
-                    right: "15px",
-                    transform: "rotate(15deg)",
-                    fontSize: "0.875rem",
-                  }}
-                >
-                  56% OFF
-                </div>
+ 
+   <section className="py-5">
+      <div className="container">
+        {/* Header */}
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+          <div>
+            <h2
+              className="fw-bold mb-1"
+              style={{ color: "rgb(0, 162, 173)", fontSize: "1.5rem" }}
+            >
+              Special Offers <br />
+              <span style={{ color: "rgb(255, 128, 0)" }}>Upto 75% Discount</span>
+            </h2>
+          </div>
+          <Link
+            to="/completehealth"
+            className="btn text-white fw-semibold shadow-sm px-4 py-2"
+            style={{
+              background: "linear-gradient(180deg, #FFA500 0%, #FF7A00 100%)",
+              border: "none",
+              fontSize: "1rem",
+              borderRadius: "8px",
+            }}
+          >
+            VIEW ALL
+          </Link>
+        </div>
 
-                <div className="card-header bg-white border-0 text-center pt-4">
-                  <h3 className="text-danger fw-bold mb-3">
-                    Full Body Checkup +<br />1 Special Profile Test FREE
-                  </h3>
-                </div>
+        {/* Carousel */}
+        <div className="position-relative overflow-hidden text-center">
+          <div
+            className="d-flex justify-content-center align-items-center position-relative"
+            style={{
+              perspective: "1000px",
+              overflow: "visible",
+            }}
+          >
+            <div
+              className="d-flex align-items-center justify-content-center"
+              style={{
+                transition: "transform 0.6s ease",
+                transform: `translateX(-${current * 100}%)`,
+                gap: "1rem",
+              }}
+            >
+              {packages.map((pkg, index) => {
+                const isActive = index === current;
+                const isLeft = index === (current - 1 + total) % total;
+                const isRight = index === (current + 1) % total;
 
-                <div className="card-body p-4">
-                  <div className="row align-items-center">
-                    <div className="col-md-7">
-                      {/* Test Count Badge */}
-                      <div className="d-flex align-items-center mb-3">
-                        <div className="bg-success rounded-circle p-2 me-3">
-                          <div className="bg-light rounded-circle p-1">
-                            <div
-                              className="bg-success rounded-pill"
-                              style={{ width: "8px", height: "12px" }}
-                            ></div>
-                          </div>
-                        </div>
-                        <span className="text-warning fw-bold fs-5">
-                          103 Tests
-                        </span>
-                      </div>
+                let transformStyle = "scale(0.9) translateY(10px)";
+                let zIndex = 1;
+                let opacity = 0.8;
 
-                      {/* Know More Button */}
+                if (isActive) {
+                  transformStyle = "scale(1.05) translateY(0)";
+                  zIndex = 3;
+                  opacity = 1;
+                } else if (isLeft) {
+                  transformStyle = "rotateY(20deg) scale(0.9) translateY(10px)";
+                  zIndex = 2;
+                } else if (isRight) {
+                  transformStyle = "rotateY(-20deg) scale(0.9) translateY(10px)";
+                  zIndex = 2;
+                }
+
+                return (
+                  <div
+                    key={pkg.id}
+                    className="card shadow-sm border-0 text-center position-relative"
+                    style={{
+                      flex: "0 0 260px",
+                      borderRadius: "20px",
+                      overflow: "hidden",
+                      background: "#fff",
+                      opacity,
+                      transform: transformStyle,
+                      zIndex,
+                      transition: "all 0.6s ease-in-out",
+                      boxShadow: isActive
+                        ? "0 8px 20px rgba(0,0,0,0.3)"
+                        : "0 4px 10px rgba(0,0,0,0.1)",
+                    }}
+                  >
+                    {/* Discount Badge */}
+                    <span
+                      className="position-absolute bg-danger text-white fw-bold px-2 py-1 rounded-end"
+                      style={{ top: "10px", left: "0", fontSize: "0.8rem" }}
+                    >
+                      56% OFF
+                    </span>
+
+                    {/* Image */}
+                    <img
+                      src={pkg.image}
+                      alt={pkg.title}
+                      className="card-img-top"
+                      style={{
+                        height: "160px",
+                        objectFit: "cover",
+                        borderTopLeftRadius: "20px",
+                        borderTopRightRadius: "20px",
+                      }}
+                    />
+
+                    {/* Content */}
+                    <div className="card-body py-3">
+                      <h6 className="fw-bold text-danger mb-1">{pkg.title}</h6>
+                      <p className="text-secondary mb-2">{pkg.tests}</p>
+
                       <button
-                        className="btn btn-primary btn-lg rounded-pill mb-3 fw-bold shadow"
-                        onClick={handleKnowMore}
-                        style={{ minWidth: "150px" }}
+                        className="btn btn-primary btn-sm rounded-pill mb-2 fw-semibold"
+                        style={{
+                          backgroundColor: "#003366",
+                          border: "none",
+                          padding: "5px 16px",
+                          fontSize: "0.85rem",
+                        }}
                       >
                         Know More
                       </button>
 
-                      {/* Price Section */}
-                      <div>
-                        <div className="text-danger display-4 fw-bold lh-1 mb-2">
-                          ₹999
-                        </div>
-                        <div className="text-dark fw-bold mb-2">
-                          Exclusive Offer
-                        </div>
-                        <div className="text-warning fs-4 fw-bold text-decoration-line-through">
-                          ₹2,299
-                        </div>
+                      <div
+                        className="fw-bold text-danger"
+                        style={{ fontSize: "1.2rem" }}
+                      >
+                        {pkg.price}
+                      </div>
+                      <div className="text-muted">Exclusive Offer</div>
+                      <div className="text-decoration-line-through text-secondary">
+                        {pkg.oldPrice}
                       </div>
                     </div>
 
-                    <div className="col-md-5 text-center">
-                      <div
-                        className="bg-warning bg-opacity-25 rounded-3 p-4 position-relative"
-                        style={{ minHeight: "200px" }}
-                      >
-                        <div className="fs-1 mb-3">👩‍🦰</div>
-                        <div
-                          className="position-absolute"
-                          style={{
-                            bottom: "20px",
-                            right: "20px",
-                            fontSize: "1.5rem",
-                            transform: "rotate(-10deg)",
-                          }}
-                        >
-                          👉
-                        </div>
-                      </div>
+                    {/* Add to Cart */}
+                    <div
+                      className="text-center py-2 fw-bold text-white"
+                      style={{
+                        backgroundColor: "#007A5E",
+                        borderBottomLeftRadius: "20px",
+                        borderBottomRightRadius: "20px",
+                        fontSize: "1rem",
+                      }}
+                    >
+                      <i className="bi bi-cart-fill me-2"></i>ADD TO CART
                     </div>
                   </div>
-                </div>
-
-                {/* Add to Cart Button */}
-                <div className="card-footer bg-success border-0 p-0">
-                  <button
-                    className="btn btn-success btn-lg w-100 rounded-0 rounded-bottom py-3 fw-bold"
-                    onClick={() => handleAddToCart()}
-                    style={{ fontSize: "1.25rem" }}
-                  >
-                    <ShoppingCart size={28} className="me-2" />
-                    ADD TO CART
-                  </button>
-                </div>
-              </div>
+                );
+              })}
             </div>
+
+            {/* Arrows — now beside center card */}
+            <button
+              className="btn btn-primary rounded-circle position-absolute shadow"
+              style={{
+                left: "5%",
+                top: "50%",
+                transform: "translateY(-50%)",
+                zIndex: 5,
+                width: "38px",
+                height: "38px",
+              }}
+              onClick={prevSlide}
+            >
+              <i className="bi bi-chevron-left text-white"></i>
+            </button>
+
+            <button
+              className="btn btn-primary rounded-circle position-absolute shadow"
+              style={{
+                right: "5%",
+                top: "50%",
+                transform: "translateY(-50%)",
+                zIndex: 5,
+                width: "38px",
+                height: "38px",
+              }}
+              onClick={nextSlide}
+            >
+              <i className="bi bi-chevron-right text-white"></i>
+            </button>
           </div>
         </div>
-      </section>
+      </div>
+
+      <style>{`
+        /* Hover Animation */
+        .card:hover {
+          transform: scale(1.07) !important;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;
+        }
+
+        /* Tablet */
+        @media (max-width: 992px) {
+          .card {
+            flex: 0 0 45%;
+          }
+        }
+
+        /* Mobile Center Card */
+        @media (max-width: 576px) {
+          .card {
+            flex: 0 0 80%;
+            margin: 0 auto;
+          }
+          .btn-primary.rounded-circle {
+            width: 34px;
+            height: 34px;
+            top: 55%;
+          }
+        }
+      `}</style>
+    </section>
+
+
 
       {/* Make Your Own Package Component */}
       <MakeYourOwnPackage />
 
       {/* Statistics Section */}
-      <section className="py-5 bg-light">
+      {/* <section className="py-5 bg-light">
         <div className="container">
           <div className="row align-items-center">
             <div className="col-lg-3 col-md-12 mb-4 mb-lg-0">
@@ -969,10 +1207,10 @@ const Home = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Ads Carousel */}
-      {ads.length > 0 && (
+      {/* {ads.length > 0 && (
         <section className="py-5">
           <div className="container">
             <h3 className="text-center mb-4 fw-bold">Special Promotions</h3>
@@ -992,7 +1230,7 @@ const Home = () => {
             </div>
           </div>
         </section>
-      )}
+      )} */}
 
       {/* Testimonials Slider */}
       <TestimonialsSlider />
