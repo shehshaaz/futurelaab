@@ -1,8 +1,9 @@
-import React, { useRef } from "react";
+import React, { useState } from "react";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 
 const GoogleReviewsSection = () => {
-  const scrollRef = useRef(null);
+  const [current, setCurrent] = useState(0);
+  const [animationClass, setAnimationClass] = useState("");
 
   const reviews = [
     {
@@ -39,6 +40,8 @@ const GoogleReviewsSection = () => {
     },
   ];
 
+  const total = reviews.length;
+
   const renderStars = (rating) =>
     Array.from({ length: 5 }, (_, i) => (
       <Star
@@ -50,14 +53,23 @@ const GoogleReviewsSection = () => {
       />
     ));
 
-  const scroll = (direction) => {
-    const { current } = scrollRef;
-    if (current) {
-      const cardWidth = current.firstChild.offsetWidth;
-      current.scrollBy({
-        left: direction === "left" ? -cardWidth : cardWidth,
-        behavior: "smooth",
-      });
+  const nextSlide = () => {
+    if (current < total - 1) {
+      setAnimationClass("slide-out-left");
+      setTimeout(() => {
+        setCurrent((prev) => prev + 1);
+        setAnimationClass("slide-in-right");
+      }, 250);
+    }
+  };
+
+  const prevSlide = () => {
+    if (current > 0) {
+      setAnimationClass("slide-out-right");
+      setTimeout(() => {
+        setCurrent((prev) => prev - 1);
+        setAnimationClass("slide-in-left");
+      }, 250);
     }
   };
 
@@ -65,20 +77,20 @@ const GoogleReviewsSection = () => {
     <section className="py-5 bg-light">
       <div className="container text-center">
         {/* Heading */}
-        <h2
+        {/* <h2
           className="fw-bold mb-4"
-          style={{ color: "#FF7F50", fontSize: "1.8rem", textTransform: "uppercase" }}
+          style={{ color: "#FF7F50", fontSize: "1.5rem", textTransform: "uppercase" }}
         >
           "Happy People Reviews"
-        </h2>
+        </h2> */}
 
         {/* Rating Summary */}
         <div className="d-flex flex-column flex-md-row justify-content-center align-items-center mb-4">
           <div className="text-center text-md-start me-md-4">
-            <h3 className="fw-bold text-dark mb-1" style={{ fontSize: "2rem" }}>
-              High Rate{" "}
+            <h3 className="fw-bold text-dark mb-1" style={{ fontSize: "1rem" }}>
+              High Rate Reviews on{" "}
               <span style={{ color: "#4285F4" }}>
-                Google Reviews{" "}
+             
                 <img
                   src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/120px-Google_2015_logo.svg.png"
                   alt="Google Logo"
@@ -107,105 +119,196 @@ const GoogleReviewsSection = () => {
 
         {/* Carousel Container */}
         <div className="position-relative">
-          {/* Left Arrow */}
-          <button
-            className="btn btn-light rounded-circle shadow position-absolute top-50 start-0 translate-middle-y"
-            style={{ zIndex: 5 }}
-            onClick={() => scroll("left")}
-          >
-            <ChevronLeft />
-          </button>
-
-          {/* Scrollable Row */}
+          {/* Single Review Card with Animation */}
           <div
-            ref={scrollRef}
-            className="d-flex overflow-auto gap-4 px-2 justify-content-center"
+            key={`${reviews[current].id}-${current}`}
+            className={`review-card bg-white p-4 rounded-4 shadow-sm text-start mx-auto animate-slide ${animationClass}`}
             style={{
-              scrollBehavior: "smooth",
-              scrollbarWidth: "none",
-              padding: "0 2rem",
+              width: "100%",
+              maxWidth: "350px",
+              borderTop: "4px solid #34A853",
+              transition: "transform 0.3s ease, box-shadow 0.3s ease",
+              minHeight: "250px",
             }}
           >
-            {reviews.map((review) => (
-              <div
-                key={review.id}
-                className="review-card bg-white p-4 rounded-4 shadow-sm flex-shrink-0 text-start"
+            <div className="d-flex align-items-center mb-3">
+              <img
+                src={reviews[current].image}
+                alt={reviews[current].name}
+                className="rounded-circle me-3"
                 style={{
-                  width: "320px",
-                  borderTop: "4px solid #34A853",
-                  transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                  width: "50px",
+                  height: "50px",
+                  objectFit: "cover",
                 }}
-              >
-                <div className="d-flex align-items-center mb-3">
-                  <img
-                    src={review.image}
-                    alt={review.name}
-                    className="rounded-circle me-3"
-                    style={{
-                      width: "50px",
-                      height: "50px",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <h6 className="fw-bold mb-0">{review.name}</h6>
-                </div>
-                <div className="d-flex mb-2">{renderStars(review.rating)}</div>
-                <p className="text-muted small mb-3">"{review.review}"</p>
-                <a
-                  href="https://www.google.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary fw-semibold text-decoration-none"
-                >
-                  View on Google
-                </a>
-              </div>
-            ))}
+              />
+              <h6 className="fw-bold mb-0">{reviews[current].name}</h6>
+            </div>
+            <div className="d-flex mb-2">{renderStars(reviews[current].rating)}</div>
+            <p className="text-muted small mb-3">"{reviews[current].review}"</p>
+            <a
+              href="https://www.google.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary fw-semibold text-decoration-none"
+            >
+              View on Google
+            </a>
           </div>
 
-          {/* Right Arrow */}
-          <button
-            className="btn btn-light rounded-circle shadow position-absolute top-50 end-0 translate-middle-y"
-            style={{ zIndex: 5 }}
-            onClick={() => scroll("right")}
-          >
-            <ChevronRight />
-          </button>
+          {/* Navigation Arrows - positioned below the card */}
+          <div className="d-flex justify-content-center align-items-center mt-4 w-100" style={{ minHeight: "60px" }}>
+            <button
+              className="btn btn-primary rounded-circle shadow me-3"
+              style={{
+                width: "45px",
+                height: "45px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "rgba(0, 162, 173, 0.9)",
+                border: "none",
+              }}
+              onClick={prevSlide}
+              disabled={current === 0}
+            >
+              <ChevronLeft className="text-white" style={{ fontSize: "1.2rem" }} />
+            </button>
+            
+            {/* Page Indicator */}
+            <div className="d-flex align-items-center mx-3">
+              {reviews.map((_, index) => (
+                <span
+                  key={index}
+                  className={`rounded-circle mx-1 ${index === current ? 'bg-primary' : 'bg-secondary'}`}
+                  style={{
+                    width: "10px",
+                    height: "10px",
+                    opacity: index === current ? 1 : 0.5,
+                  }}
+                ></span>
+              ))}
+            </div>
+            
+            <button
+              className="btn btn-primary rounded-circle shadow"
+              style={{
+                width: "45px",
+                height: "45px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "rgba(0, 162, 173, 0.9)",
+                border: "none",
+              }}
+              onClick={nextSlide}
+              disabled={current === reviews.length - 1}
+            >
+              <ChevronRight className="text-white" style={{ fontSize: "1.2rem" }} />
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Styling */}
       <style>{`
-        .review-card {
-          transform: scale(0.95);
-          opacity: 0.9;
+        /* Slide Animation */
+        @keyframes slideInRight {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
         }
+        
+        @keyframes slideInLeft {
+          from {
+            transform: translateX(-100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        
+        @keyframes slideOutLeft {
+          from {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(-100%);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes slideOutRight {
+          from {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+        }
+        
+        .animate-slide {
+          animation: slideInRight 0.5s ease-out forwards;
+        }
+        
+        .animate-slide.slide-out-left {
+          animation: slideOutLeft 0.5s ease-out forwards;
+        }
+        
+        .animate-slide.slide-out-right {
+          animation: slideOutRight 0.5s ease-out forwards;
+        }
+        
+        .animate-slide.slide-in-left {
+          animation: slideInLeft 0.5s ease-out forwards;
+        }
+
         .review-card:hover {
-          transform: scale(1);
-          opacity: 1;
+          transform: scale(1.02);
           box-shadow: 0 10px 20px rgba(0,0,0,0.15);
         }
 
-        .overflow-auto::-webkit-scrollbar {
-          display: none;
+        @media (max-width: 992px) {
+          .review-card {
+            max-width: 320px !important;
+          }
         }
 
         @media (max-width: 768px) {
           .review-card {
-            width: 85% !important;
-            margin: 0 auto;
+            max-width: 280px !important;
           }
-          button.btn-light {
+          
+          button.btn-primary.rounded-circle {
             width: 40px !important;
             height: 40px !important;
-            top: auto !important;
-            bottom: -50px !important;
           }
-          .position-absolute.start-0 {
-            left: 30% !important;
+        }
+        
+        @media (max-width: 576px) {
+          .review-card {
+            max-width: calc(100vw - 60px) !important;
           }
-          .position-absolute.end-0 {
-            right: 30% !important;
+          
+          button.btn-primary.rounded-circle {
+            width: 36px !important;
+            height: 36px !important;
+          }
+        }
+        
+        @media (max-width: 400px) {
+          .review-card {
+            max-width: calc(100vw - 40px) !important;
           }
         }
       `}</style>

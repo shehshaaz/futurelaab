@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ShoppingCart, Search, CheckCircle, AlertTriangle } from "lucide-react";
 import apiService from "../utils/api";
@@ -43,9 +43,9 @@ const Home = () => {
   const [cartItems, setCartItems] = useState([]);
   const [showCartNotification, setShowCartNotification] = useState(false);
 
-
-
-
+  // Animation state
+  const [animationClass, setAnimationClass] = useState("");
+  const [direction, setDirection] = useState("right"); // 'left' or 'right'
 
   // special offers carousel
     const packages = [
@@ -103,15 +103,26 @@ const Home = () => {
   const total = packages.length;
 
   const nextSlide = () => {
-    setCurrent((prev) => (prev === total - 1 ? 0 : prev + 1));
+    if (current < total - 1) {
+      setDirection("right");
+      setAnimationClass("slide-out-left");
+      setTimeout(() => {
+        setCurrent((prev) => prev + 1);
+        setAnimationClass("slide-in-right");
+      }, 250);
+    }
   };
 
   const prevSlide = () => {
-    setCurrent((prev) => (prev === 0 ? total - 1 : prev - 1));
+    if (current > 0) {
+      setDirection("left");
+      setAnimationClass("slide-out-right");
+      setTimeout(() => {
+        setCurrent((prev) => prev - 1);
+        setAnimationClass("slide-in-left");
+      }, 250);
+    }
   };
-
-  
-  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -236,8 +247,8 @@ const Home = () => {
     }
   };
      const chunkedCategories = [];
-  for (let i = 0; i < categories.length; i += 6) {
-    chunkedCategories.push(categories.slice(i, i + 6));
+  for (let i = 0; i < categories.length; i += 4) {
+    chunkedCategories.push(categories.slice(i, i + 4));
   }
 
   const chunkedAds = [];
@@ -523,67 +534,124 @@ const Home = () => {
 
 
 
-<section
-  className="py-16 relative overflow-hidden"
-  style={{ backgroundColor: "rgb(119, 217, 207)" }}
->
-  <div className="container mx-auto px-4 flex flex-col items-center text-center">
-    {/* Heading */}
-    <h2 className="text-3xl md:text-4xl font-bold text-white drop-shadow-lg mb-4">
-      Enter Your Pincode to Check Service Availability
-    </h2>
-    <p className="text-white/90 mb-10 max-w-xl text-lg">
-      Enter your pincode
-    </p>
+   {/* Pin Code Service Availability Section */}
+      <section className="py-5 bg-light">
+        <div className="container">
+          <div className="row justify-content-center">
+            <div className="col-lg-8 col-md-10">
+              <h2 className="text-center mb-4 fw-bold">
+                Check Service Availability
+              </h2>
+              <div className="card shadow-sm border-0">
+                <div className="card-body p-4">
+                  <form onSubmit={handlePinCodeCheck}>
+                    <div className="row g-3 align-items-end">
+                      <div className="col-md-8">
+                        <label
+                          htmlFor="pincode"
+                          className="form-label fw-semibold"
+                        >
+                          Enter Your Pin Code
+                        </label>
+                        <input
+                          type="text"
+                          id="pincode"
+                          name="pincode"
+                          className="form-control form-control-lg"
+                          placeholder="Enter 6-digit pin code"
+                          value={pinCode}
+                          onChange={(e) =>
+                            setPinCode(
+                              e.target.value.replace(/\D/g, "").slice(0, 6)
+                            )
+                          }
+                          pattern="[0-9]{6}"
+                          maxLength="6"
+                          required
+                        />
+                      </div>
+                      <div className="col-md-4">
+                        <button
+                          className="btn btn-primary btn-lg w-100"
+                          type="submit"
+                          disabled={checkingService || pinCode.length !== 6}
+                        >
+                          {checkingService ? (
+                            <>
+                              <span
+                                className="spinner-border spinner-border-sm me-2"
+                                role="status"
+                              ></span>
+                              Checking...
+                            </>
+                          ) : (
+                            <>
+                              <Search size={20} className="me-2" />
+                              Check
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </form>
 
-    {/* Pincode Checker Card */}
-    <div className="w-full max-w-md bg-white rounded-xl shadow-xl border border-gray-200 p-5">
-      <form className="flex flex-col sm:flex-row items-center justify-center gap-3">
-        <input
-          id="pincode-input"
-          type="text"
-          inputMode="numeric"
-          pattern="\d*"
-          maxLength="6"
-          placeholder="Enter 6-digit pin code"
-          className="w-full sm:flex-1 px-4 py-3 rounded-lg border border-gray-300 text-gray-700 
-                     focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-500
-                     transition-all duration-200 text-base"
-        />
-
-  <button
-    type="submit"
-    className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 
-               bg-blue-600 text-white font-semibold rounded-md shadow-md
-               hover:bg-blue-700 hover:shadow-lg active:scale-95
-               transition-all duration-200 focus:ring-4 focus:ring-blue-300"
-    style={{ minHeight: "48px" }}
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth={2}
-      stroke="currentColor"
-      className="w-5 h-5"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
-      />
-    </svg>
-    Check Availability
-  </button>
-      </form>
-    </div>
-  </div>
-
-  {/* Decorative shapes */}
-  <div className="absolute top-0 left-0 w-40 h-40 bg-white/20 rounded-full blur-3xl animate-pulse"></div>
-  <div className="absolute bottom-0 right-0 w-56 h-56 bg-white/20 rounded-full blur-3xl animate-pulse"></div>
-</section>
-
+                  {/* Service Availability Result */}
+                  {serviceAvailable !== null && (
+                    <div className="mt-4">
+                      <div
+                        className={`alert ${
+                          serviceAvailable ? "alert-success" : "alert-warning"
+                        } border-0 shadow-sm`}
+                        role="alert"
+                      >
+                        <div className="d-flex align-items-start">
+                          {serviceAvailable ? (
+                            <CheckCircle
+                              className="me-3 mt-1 text-success"
+                              size={24}
+                            />
+                          ) : (
+                            <AlertTriangle
+                              className="me-3 mt-1 text-warning"
+                              size={24}
+                            />
+                          )}
+                          <div>
+                            {serviceAvailable ? (
+                              <>
+                                <h5 className="alert-heading mb-2">
+                                  Service Available! 🎉
+                                </h5>
+                                <p className="mb-0">
+                                  Great news! We provide home sample collection
+                                  and lab services in your area (PIN: {pinCode}
+                                  ). Book your test now!
+                                </p>
+                              </>
+                            ) : (
+                              <>
+                                <h5 className="alert-heading mb-2">
+                                  Service Not Available
+                                </h5>
+                                <p className="mb-0">
+                                  We don't provide services in PIN: {pinCode}{" "}
+                                  yet. Please contact us at{" "}
+                                  <strong>+91-9876543210</strong> for
+                                  assistance.
+                                </p>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
 
 
@@ -610,8 +678,8 @@ const Home = () => {
       </section>
 
       {/* Categories Section */}
-<section className="py-5 bg-light">
-  <div className="container"  style={{ backgroundColor: 'rgba(224, 247, 247, 0.7)' }} className="p-3 rounded-3">
+{/* <section className="py-5 bg-light">
+  <div className="container p-3 rounded-3"  style={{ backgroundColor: 'rgba(224, 247, 247, 0.7)' }}> */}
     {/* Header Section */}
     {/* <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-5 text-center text-md-start">
    <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center align-items-start bg-light p-3 rounded-3 shadow-sm">
@@ -642,9 +710,9 @@ const Home = () => {
   </Link>
 </div>
 </div> */}
-
+{/* 
   </div>
-</section>
+</section> */}
 
     {/* Cards Section */}
 <section className="py-5">
@@ -678,139 +746,206 @@ const Home = () => {
     </div>
 
     {/* Carousel */}
-    <Carousel
-      interval={null}
-      controls={true}
-      indicators={false}
-      nextIcon={<span className="carousel-control-next-icon" />}
-      prevIcon={<span className="carousel-control-prev-icon" />}
-      className="custom-carousel "
-    >
-      {chunkedCategories.map((group, index) => (
-        <Carousel.Item key={index}>
-          <div className="row g-3 justify-content-center">
-            {group.map((item, idx) => (
-              <div
-                key={idx}
-                className="col-6 col-sm-3 col-md-3 col-lg-3 col-xl-3"
-              >
-                <Link
-                  to={`/completehealth?tab=${encodeURIComponent(item.name)}`}
-                  className="text-decoration-none"
+    <div className="position-relative">
+      <div className="overflow-hidden">
+        <div 
+          className="d-flex transition-container"
+          style={{ 
+            transform: `translateX(-${current * 100}%)`,
+            transition: 'transform 0.5s ease-in-out'
+          }}
+        >
+          {chunkedCategories.map((group, index) => (
+            <div 
+              key={index} 
+              className="d-flex flex-wrap justify-content-center w-100"
+              style={{ minWidth: '100%' }}
+            >
+              {group.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="col-6 col-sm-6 col-md-3 col-lg-3 p-2"
                 >
-                  <div
-                    className="card border-0 rounded-4 overflow-hidden shadow-sm h-100 position-relative"
-                    style={{
-                      borderRadius: "14px",
-                      transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = "translateY(-6px)";
-                      e.currentTarget.style.boxShadow =
-                        "0 8px 20px rgba(0,0,0,0.15)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = "translateY(0)";
-                      e.currentTarget.style.boxShadow =
-                        "0 4px 10px rgba(0,0,0,0.05)";
-                    }}
+                  <Link
+                    to={`/completehealth?tab=${encodeURIComponent(item.name)}`}
+                    className="text-decoration-none"
                   >
-                    <div className="position-relative overflow-hidden rounded-top-4">
-                      <img
-                        className="img-fluid w-100"
-                        src={getImageUrl(item.imagePath)}
-                        alt={item.name}
-                        style={{
-                          height: "160px",
-                          objectFit: "cover",
-                          transition: "transform 0.3s ease",
-                          borderTopLeftRadius: "14px",
-                          borderTopRightRadius: "14px",
-                        }}
-                        onMouseEnter={(e) =>
-                          (e.currentTarget.style.transform = "scale(1.05)")
-                        }
-                        onMouseLeave={(e) =>
-                          (e.currentTarget.style.transform = "scale(1)")
-                        }
-                      />
-                    </div>
                     <div
-                      className="text-center py-2 rounded-bottom-4"
+                      className="card border-0 rounded-4 overflow-hidden shadow-sm h-100 position-relative money-saving-card"
                       style={{
-                        backgroundColor: "rgb(119, 217, 207)",
-                        color: "#004d4d",
-                        fontWeight: "600",
-                        fontSize: "0.95rem",
+                        borderRadius: "14px",
+                        transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = "translateY(-6px)";
+                        e.currentTarget.style.boxShadow =
+                          "0 8px 20px rgba(0,0,0,0.15)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = "translateY(0)";
+                        e.currentTarget.style.boxShadow =
+                          "0 4px 10px rgba(0,0,0,0.05)";
                       }}
                     >
-                      {item.name}
+                      <div className="position-relative overflow-hidden rounded-top-4">
+                        <img
+                          className="img-fluid w-100 money-saving-image"
+                          src={getImageUrl(item.imagePath)}
+                          alt={item.name}
+                          style={{
+                            height: "160px",
+                            objectFit: "cover",
+                            transition: "transform 0.3s ease",
+                            borderTopLeftRadius: "14px",
+                            borderTopRightRadius: "14px",
+                          }}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.transform = "scale(1.05)")
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.transform = "scale(1)")
+                          }
+                        />
+                      </div>
+                      <div
+                        className="text-center py-2 rounded-bottom-4"
+                        style={{
+                          backgroundColor: "rgb(119, 217, 207)",
+                          color: "#004d4d",
+                          fontWeight: "600",
+                          fontSize: "0.95rem",
+                        }}
+                      >
+                        {item.name}
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              </div>
-            ))}
-          </div>
-        </Carousel.Item>
-      ))}
-    </Carousel>
+                  </Link>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
 
-    {/* Carousel Navigation Arrows */}
+      {/* Carousel Navigation Arrows */}
+      <div className="d-flex justify-content-center align-items-center mt-4 w-100" style={{ minHeight: "60px" }}>
+        <button
+          className="btn btn-primary rounded-circle shadow me-3"
+          style={{
+            width: "45px",
+            height: "45px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "rgba(0, 162, 173, 0.9)",
+            border: "none",
+          }}
+          onClick={prevSlide}
+          disabled={current === 0}
+        >
+          <i className="bi bi-chevron-left text-white" style={{ fontSize: "1.2rem" }}></i>
+        </button>
+        
+        {/* Page Indicator */}
+        <div className="d-flex align-items-center mx-3">
+          {chunkedCategories.map((_, index) => (
+            <span
+              key={index}
+              className={`rounded-circle mx-1 ${index === current ? 'bg-primary' : 'bg-secondary'}`}
+              style={{
+                width: "10px",
+                height: "10px",
+                opacity: index === current ? 1 : 0.5,
+              }}
+            ></span>
+          ))}
+        </div>
+        
+        <button
+          className="btn btn-primary rounded-circle shadow"
+          style={{
+            width: "45px",
+            height: "45px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "rgba(0, 162, 173, 0.9)",
+            border: "none",
+          }}
+          onClick={nextSlide}
+          disabled={current === chunkedCategories.length - 1}
+        >
+          <i className="bi bi-chevron-right text-white" style={{ fontSize: "1.2rem" }}></i>
+        </button>
+      </div>
+    </div>
+
+    {/* Responsive Styles */}
     <style>{`
-      .custom-carousel {
-        position: relative;
-      }
-
-      /* Arrows Base Style */
-      .custom-carousel .carousel-control-prev,
-      .custom-carousel .carousel-control-next {
-        position: absolute;
-        bottom: -45px;
-        top: auto;
-        width: 42px;
-        height: 42px;
-        background-color: rgba(0, 162, 173, 0.9);
-        border-radius: 50%;
+      .transition-container {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0.9;
-        transition: all 0.25s ease;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+      
+      .money-saving-card {
+        height: 100%;
+      }
+      
+      .money-saving-image {
+        height: 160px !important;
+        object-fit: cover;
       }
 
-      /* Hover and Active States */
-      .custom-carousel .carousel-control-prev:hover,
-      .custom-carousel .carousel-control-next:hover {
-        background-color: rgba(0, 162, 173, 1);
-        transform: scale(1.1);
-      }
-
-      .custom-carousel .carousel-control-prev:active,
-      .custom-carousel .carousel-control-next:active {
-        transform: scale(0.9);
-        box-shadow: 0 0 12px rgba(0, 200, 255, 0.8);
-      }
-
-      /* Positioning bottom center */
-      .custom-carousel .carousel-control-prev {
-        left: calc(50% - 60px);
-      }
-
-      .custom-carousel .carousel-control-next {
-        right: calc(50% - 60px);
-      }
-
-      /* Mobile Adjustments */
-      @media (max-width: 767px) {
-        .custom-carousel .carousel-control-prev,
-        .custom-carousel .carousel-control-next {
-          width: 36px;
-          height: 36px;
-          bottom: -35px;
+      /* Desktop - 4 cards per row */
+      @media (min-width: 992px) {
+        .col-lg-3 {
+          flex: 0 0 25%;
+          max-width: 25%;
         }
-        .custom-carousel img {
+      }
+
+      /* Tablet - 2 cards per row */
+      @media (min-width: 768px) and (max-width: 991px) {
+        .col-md-3 {
+          flex: 0 0 50%;
+          max-width: 50%;
+        }
+        
+        .money-saving-image {
+          height: 140px !important;
+        }
+      }
+
+      /* Mobile - 2 cards per row */
+      @media (max-width: 767px) {
+        .col-6 {
+          flex: 0 0 50%;
+          max-width: 50%;
+        }
+        
+        .money-saving-image {
+          height: 130px !important;
+        }
+        
+        .card {
+          margin-bottom: 10px;
+        }
+      }
+      
+      /* Small Mobile */
+      @media (max-width: 576px) {
+        .money-saving-image {
           height: 120px !important;
+        }
+        
+        .col-6 {
+          padding: 5px;
+        }
+      }
+      
+      /* Extra small devices */
+      @media (max-width: 400px) {
+        .money-saving-image {
+          height: 110px !important;
         }
       }
     `}</style>
@@ -898,10 +1033,10 @@ const Home = () => {
 
       {/* Special Offer Card */}
  
-   <section className="py-5">
+   <section className="py-4">
       <div className="container">
         {/* Header */}
-        <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 ">
           <div>
             <h2
               className="fw-bold mb-1"
@@ -928,184 +1063,334 @@ const Home = () => {
         {/* Carousel */}
         <div className="position-relative overflow-hidden text-center">
           <div
-            className="d-flex justify-content-center align-items-center position-relative"
+            className="d-flex justify-content-center align-items-center position-relative w-100"
             style={{
-              perspective: "1000px",
-              overflow: "visible",
+              minHeight: "420px",
             }}
           >
+            {/* Single Card Display with Animation */}
             <div
-              className="d-flex align-items-center justify-content-center"
+              key={packages[current].id}
+              className="card shadow-sm border-0 text-center position-relative special-offer-card mx-auto animate-slide"
               style={{
-                transition: "transform 0.6s ease",
-                transform: `translateX(-${current * 100}%)`,
-                gap: "1rem",
+                borderRadius: "20px",
+                overflow: "hidden",
+                background: "#fff",
+                boxShadow: "0 12px 25px rgba(0,0,0,0.3)",
+                maxHeight: "380px",
+                width: "100%",
+                maxWidth: "320px",
               }}
             >
-              {packages.map((pkg, index) => {
-                const isActive = index === current;
-                const isLeft = index === (current - 1 + total) % total;
-                const isRight = index === (current + 1) % total;
+              {/* Discount Badge */}
+              <span
+                className="position-absolute bg-danger text-white fw-bold px-2 py-1 rounded-end"
+                style={{ top: "10px", left: "0", fontSize: "0.8rem" }}
+              >
+                56% OFF
+              </span>
 
-                let transformStyle = "scale(0.9) translateY(10px)";
-                let zIndex = 1;
-                let opacity = 0.8;
+              {/* Image */}
+              <div className="overflow-hidden" style={{ height: "150px" }}>
+                <img
+                  src={packages[current].image}
+                  alt={packages[current].title}
+                  className="card-img-top w-100 h-100 object-fit-cover"
+                  style={{
+                    borderTopLeftRadius: "20px",
+                    borderTopRightRadius: "20px",
+                  }}
+                />
+              </div>
 
-                if (isActive) {
-                  transformStyle = "scale(1.05) translateY(0)";
-                  zIndex = 3;
-                  opacity = 1;
-                } else if (isLeft) {
-                  transformStyle = "rotateY(20deg) scale(0.9) translateY(10px)";
-                  zIndex = 2;
-                } else if (isRight) {
-                  transformStyle = "rotateY(-20deg) scale(0.9) translateY(10px)";
-                  zIndex = 2;
-                }
+              {/* Content */}
+              <div className="card-body py-3 px-3">
+                <h6 className="fw-bold text-danger mb-2" style={{ fontSize: "1.1rem" }}>{packages[current].title}</h6>
+                <p className="text-secondary mb-2" style={{ fontSize: "0.95rem" }}>{packages[current].tests}</p>
 
-                return (
-                  <div
-                    key={pkg.id}
-                    className="card shadow-sm border-0 text-center position-relative"
-                    style={{
-                      flex: "0 0 260px",
-                      borderRadius: "20px",
-                      overflow: "hidden",
-                      background: "#fff",
-                      opacity,
-                      transform: transformStyle,
-                      zIndex,
-                      transition: "all 0.6s ease-in-out",
-                      boxShadow: isActive
-                        ? "0 8px 20px rgba(0,0,0,0.3)"
-                        : "0 4px 10px rgba(0,0,0,0.1)",
-                    }}
-                  >
-                    {/* Discount Badge */}
-                    <span
-                      className="position-absolute bg-danger text-white fw-bold px-2 py-1 rounded-end"
-                      style={{ top: "10px", left: "0", fontSize: "0.8rem" }}
-                    >
-                      56% OFF
-                    </span>
+                <button
+                  className="btn btn-primary btn-sm rounded-pill mb-3 fw-semibold"
+                  style={{
+                    backgroundColor: "#003366",
+                    border: "none",
+                    padding: "6px 20px",
+                    fontSize: "0.9rem",
+                  }}
+                >
+                  Know More
+                </button>
 
-                    {/* Image */}
-                    <img
-                      src={pkg.image}
-                      alt={pkg.title}
-                      className="card-img-top"
-                      style={{
-                        height: "160px",
-                        objectFit: "cover",
-                        borderTopLeftRadius: "20px",
-                        borderTopRightRadius: "20px",
-                      }}
-                    />
+                <div
+                  className="fw-bold text-danger mb-1"
+                  style={{ fontSize: "1.3rem" }}
+                >
+                  {packages[current].price}
+                </div>
+                <div className="text-muted small mb-1">Exclusive Offer</div>
+                <div className="text-decoration-line-through text-secondary small">
+                  {packages[current].oldPrice}
+                </div>
+              </div>
 
-                    {/* Content */}
-                    <div className="card-body py-3">
-                      <h6 className="fw-bold text-danger mb-1">{pkg.title}</h6>
-                      <p className="text-secondary mb-2">{pkg.tests}</p>
-
-                      <button
-                        className="btn btn-primary btn-sm rounded-pill mb-2 fw-semibold"
-                        style={{
-                          backgroundColor: "#003366",
-                          border: "none",
-                          padding: "5px 16px",
-                          fontSize: "0.85rem",
-                        }}
-                      >
-                        Know More
-                      </button>
-
-                      <div
-                        className="fw-bold text-danger"
-                        style={{ fontSize: "1.2rem" }}
-                      >
-                        {pkg.price}
-                      </div>
-                      <div className="text-muted">Exclusive Offer</div>
-                      <div className="text-decoration-line-through text-secondary">
-                        {pkg.oldPrice}
-                      </div>
-                    </div>
-
-                    {/* Add to Cart */}
-                    <div
-                      className="text-center py-2 fw-bold text-white"
-                      style={{
-                        backgroundColor: "#007A5E",
-                        borderBottomLeftRadius: "20px",
-                        borderBottomRightRadius: "20px",
-                        fontSize: "1rem",
-                      }}
-                    >
-                      <i className="bi bi-cart-fill me-2"></i>ADD TO CART
-                    </div>
-                  </div>
-                );
-              })}
+              {/* Add to Cart */}
+              <div
+                className="text-center py-3 fw-bold text-white"
+                style={{
+                  backgroundColor: "#007A5E",
+                  borderBottomLeftRadius: "20px",
+                  borderBottomRightRadius: "20px",
+                  fontSize: "1rem",
+                }}
+              >
+                <i className="bi bi-cart-fill me-2"></i>ADD TO CART
+              </div>
             </div>
 
-            {/* Arrows — now beside center card */}
-            <button
-              className="btn btn-primary rounded-circle position-absolute shadow"
-              style={{
-                left: "5%",
-                top: "50%",
-                transform: "translateY(-50%)",
-                zIndex: 5,
-                width: "38px",
-                height: "38px",
-              }}
-              onClick={prevSlide}
-            >
-              <i className="bi bi-chevron-left text-white"></i>
-            </button>
-
-            <button
-              className="btn btn-primary rounded-circle position-absolute shadow"
-              style={{
-                right: "5%",
-                top: "50%",
-                transform: "translateY(-50%)",
-                zIndex: 5,
-                width: "38px",
-                height: "38px",
-              }}
-              onClick={nextSlide}
-            >
-              <i className="bi bi-chevron-right text-white"></i>
-            </button>
+            {/* Arrows - moved to bottom of cards */}
+            <div className="d-flex justify-content-center mt-0 w-100 position-absolute " style={{ bottom: "-5px", left: 0, right: 0 }}>
+              <button
+                className="btn btn-primary rounded-circle shadow me-3 mt-8"
+                style={{
+                  width: "45px",
+                  height: "45px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                onClick={prevSlide}
+                disabled={current === 0}
+              >
+                <i className="bi bi-chevron-left text-white"></i>
+              </button>
+              
+              {/* Page Indicator */}
+              <div className="d-flex align-items-center mx-3">
+                {packages.map((_, index) => (
+                  <span
+                    key={index}
+                    className={`rounded-circle mx-1 ${index === current ? 'bg-primary' : 'bg-secondary'}`}
+                    style={{
+                      width: "10px",
+                      height: "10px",
+                      opacity: index === current ? 1 : 0.5,
+                    }}
+                  ></span>
+                ))}
+              </div>
+              
+              <button
+                className="btn btn-primary rounded-circle shadow"
+                style={{
+                  width: "45px",
+                  height: "45px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                onClick={nextSlide}
+                disabled={current === packages.length - 1}
+              >
+                <i className="bi bi-chevron-right text-white"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <style>{`
+        /* Slide Animation */
+        @keyframes slideInRight {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        
+        @keyframes slideInLeft {
+          from {
+            transform: translateX(-100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        
+        @keyframes slideOutLeft {
+          from {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(-100%);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes slideOutRight {
+          from {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+        }
+        
+        .animate-slide {
+          animation: slideInRight 0.5s ease-out forwards;
+        }
+        
+        .animate-slide.slide-out-left {
+          animation: slideOutLeft 0.5s ease-out forwards;
+        }
+        
+        .animate-slide.slide-out-right {
+          animation: slideOutRight 0.5s ease-out forwards;
+        }
+        
+        .animate-slide.slide-in-left {
+          animation: slideInLeft 0.5s ease-out forwards;
+        }
+
         /* Hover Animation */
-        .card:hover {
-          transform: scale(1.07) !important;
-          box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;
+        .special-offer-card:hover {
+          transform: scale(1.02) !important;
+          box-shadow: 0 15px 30px rgba(0,0,0,0.4) !important;
         }
 
         /* Tablet */
         @media (max-width: 992px) {
-          .card {
-            flex: 0 0 45%;
+          .special-offer-card {
+            max-width: 300px !important;
+            max-height: 360px;
+          }
+          
+          .special-offer-card .card-body {
+            padding: 1rem !important;
+          }
+          
+          .special-offer-card .card-body h6 {
+            font-size: 1rem !important;
+          }
+          
+          .special-offer-card .card-body p {
+            font-size: 0.9rem !important;
+          }
+          
+          .special-offer-card .card-body button {
+            padding: 5px 18px !important;
+            font-size: 0.85rem !important;
+          }
+          
+          .special-offer-card .card-body .fw-bold {
+            font-size: 1.2rem !important;
+          }
+          
+          .special-offer-card .card-body .small {
+            font-size: 0.8rem !important;
+          }
+          
+          .special-offer-card .card-img-top {
+            height: 140px !important;
           }
         }
 
-        /* Mobile Center Card */
-        @media (max-width: 576px) {
-          .card {
-            flex: 0 0 80%;
-            margin: 0 auto;
+        /* Mobile */
+        @media (max-width: 768px) {
+          .special-offer-card {
+            max-width: 280px !important;
+            max-height: 350px;
           }
+          
+          .special-offer-card .card-img-top {
+            height: 130px !important;
+          }
+          
+          .special-offer-card .card-body h6 {
+            font-size: 0.95rem !important;
+          }
+          
+          .special-offer-card .card-body p {
+            font-size: 0.85rem !important;
+          }
+          
+          .special-offer-card .card-body button {
+            padding: 4px 16px !important;
+            font-size: 0.8rem !important;
+          }
+          
+          .special-offer-card .card-body .fw-bold {
+            font-size: 1.1rem !important;
+          }
+          
+          .special-offer-card .card-body .small {
+            font-size: 0.75rem !important;
+          }
+          
           .btn-primary.rounded-circle {
-            width: 34px;
-            height: 34px;
-            top: 55%;
+            width: 40px !important;
+            height: 40px !important;
+          }
+        }
+        
+        /* Small Mobile */
+        @media (max-width: 576px) {
+          .special-offer-card {
+            max-width: calc(100vw - 60px) !important;
+            max-height: 330px;
+          }
+          
+          .special-offer-card .card-img-top {
+            height: 120px !important;
+          }
+          
+          .special-offer-card .card-body {
+            padding: 0.75rem !important;
+          }
+          
+          .special-offer-card .card-body h6 {
+            font-size: 0.9rem !important;
+          }
+          
+          .special-offer-card .card-body p {
+            font-size: 0.8rem !important;
+          }
+          
+          .special-offer-card .card-body button {
+            padding: 3px 14px !important;
+            font-size: 0.75rem !important;
+          }
+          
+          .special-offer-card .card-body .fw-bold {
+            font-size: 1rem !important;
+          }
+          
+          .special-offer-card .card-body .small {
+            font-size: 0.7rem !important;
+          }
+          
+          .btn-primary.rounded-circle {
+            width: 36px !important;
+            height: 36px !important;
+          }
+          
+          /* Ensure carousel doesn't overflow on small screens */
+          .position-relative.overflow-hidden {
+            overflow: hidden !important;
+          }
+        }
+        
+        /* Extra small devices */
+        @media (max-width: 400px) {
+          .special-offer-card {
+            max-width: calc(100vw - 40px) !important;
           }
         }
       `}</style>

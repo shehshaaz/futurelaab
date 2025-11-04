@@ -154,20 +154,34 @@ const Header = () => {
             {/* Logo Section */}
            <div className="col-lg-2 col-md-3 col-sm-12 col-12">
   <Link to="/" className="logo-bounce d-inline-block">
-    <img
-      src="/images/logo/WhatsApp Image 2025-08-19 at 17.38.25_ee7be669.jpg" // or use process.env.PUBLIC_URL + "/images/logo/futurelogo.svg"
-      alt="FutureLabs"
-      className="logo"
-      onError={(e) => {
-        e.target.onerror = null;
-        e.target.src = "/images/logo/favicon.jpg"; // fallback image
-      }}
-      style={{ 
-        maxHeight: "70px", 
-        width: "auto",
-        transition: "transform 0.3s ease"
-      }}
-    />
+    {/* Using flex display for favicon and logo alignment */}
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <img
+        src="/images/logo/favicon.jpg"
+        alt="Favicon"
+        className="favicon"
+        style={{ 
+          maxHeight: "30px", 
+          width: "auto",
+          marginRight: "10px",
+          transition: "transform 0.3s ease"
+        }}
+      />
+      <img
+        src="/images/logo/WhatsApp Image 2025-08-19 at 17.38.25_ee7be669.jpg"
+        alt="FutureLabs"
+        className="logo"
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = "/images/logo/favicon.jpg";
+        }}
+        style={{ 
+          maxHeight: "70px", 
+          width: "auto",
+          transition: "transform 0.3s ease"
+        }}
+      />
+    </div>
   </Link>
 </div>
 
@@ -287,20 +301,34 @@ const Header = () => {
           <div className="row p-1">
             <div className="col-6 p-0">
               <Link to="/" className="logo-bounce d-inline-block">
-                <img
-                  src={`${process.env.PUBLIC_URL}/images/logo/WhatsApp Image 2025-08-19 at 17.38.25_ee7be669.jpg`}
-                  alt="FutureLabs"
-                  className="logo"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = `${process.env.PUBLIC_URL}/images/logo/favicon.jpg`;
-                  }}
-                  style={{ 
-                    maxHeight: "60px", 
-                    width: "auto",
-                    transition: 'transform 0.3s ease'
-                  }}
-                />
+                {/* Using flex display for favicon and logo alignment in mobile view */}
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <img
+                    src={`${process.env.PUBLIC_URL}/images/logo/favicon.jpg`}
+                    alt="Favicon"
+                    className="favicon"
+                    style={{ 
+                      maxHeight: "25px", 
+                      width: "auto",
+                      marginRight: "8px",
+                      transition: 'transform 0.3s ease'
+                    }}
+                  />
+                  <img
+                    src={`${process.env.PUBLIC_URL}/images/logo/WhatsApp Image 2025-08-19 at 17.38.25_ee7be669.jpg`}
+                    alt="FutureLabs"
+                    className="logo"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = `${process.env.PUBLIC_URL}/images/logo/favicon.jpg`;
+                    }}
+                    style={{ 
+                      maxHeight: "60px", 
+                      width: "auto",
+                      transition: 'transform 0.3s ease'
+                    }}
+                  />
+                </div>
               </Link>
             </div>
             <div className="col-6 text-end p-2">
