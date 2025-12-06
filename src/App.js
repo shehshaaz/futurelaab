@@ -20,6 +20,7 @@ import ErrorPage from './pages/ErrorPage';
 import Completehealth from './pages/Completehealth';
 import SendOtpTest from './pages/SendOtpTest';
 import SendOtpBhashSMSTest from './pages/SendOtpBhashSMSTest';
+import CreatePackage from './pages/CreatePackage';
 
 // Import admin components
 import AdminDashboard from './admin/AdminDashboard';
@@ -56,6 +57,7 @@ function App() {
           <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
           <Route path="/send-otp-test" element={<SendOtpTest />} />
           <Route path="/send-otp-bhashsms-test" element={<SendOtpBhashSMSTest />} />
+          <Route path="/create-package" element={<CreatePackage />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminAuthWrapper><AdminDashboard /></AdminAuthWrapper>} />
           <Route path="/admin/*" element={<AdminAuthWrapper><AdminDashboard /></AdminAuthWrapper>} />

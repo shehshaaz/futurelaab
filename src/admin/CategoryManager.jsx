@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import apiService from "../utils/api";
 import "./AdminDashboard.css";
 
 const CategoryManager = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [formData, setFormData] = useState({
@@ -16,64 +18,27 @@ const CategoryManager = () => {
     isSelected: false,
   });
 
-  // Mock data for demonstration
+  // Fetch categories from API
   useEffect(() => {
-    const mockCategories = [
-      {
-        id: 1,
-        name: "Health Checkup",
-        description: "Comprehensive health assessment packages",
-        type: "health-package",
-        imagePath: "/images/health-checkup.jpg",
-        isActive: true,
-        isFeatured: true,
-        isSelected: true,
-      },
-      {
-        id: 2,
-        name: "Special Care",
-        description: "Specialized care packages for specific conditions",
-        type: "special-care",
-        imagePath: "/images/special-care.jpg",
-        isActive: true,
-        isFeatured: true,
-        isSelected: true,
-      },
-      {
-        id: 3,
-        name: "Vital Organ",
-        description: "Organ-specific health assessments",
-        type: "vital-organ",
-        imagePath: "/images/vital-organ.jpg",
-        isActive: true,
-        isFeatured: false,
-        isSelected: true,
-      },
-      {
-        id: 4,
-        name: "Women Care",
-        description: "Health packages designed for women",
-        type: "women-care",
-        imagePath: "/images/women-care.jpg",
-        isActive: true,
-        isFeatured: false,
-        isSelected: true,
-      },
-      {
-        id: 5,
-        name: "Men Care",
-        description: "Health packages designed for men",
-        type: "men-care",
-        imagePath: "/images/men-care.jpg",
-        isActive: true,
-        isFeatured: false,
-        isSelected: true,
-      },
-    ];
-
-    setCategories(mockCategories);
-    setLoading(false);
+    fetchCategories();
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      setLoading(true);
+      const response = await apiService.getAdminCategories();
+      if (response.success) {
+        setCategories(response.data);
+      } else {
+        setError(response.error || "Failed to fetch categories");
+      }
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+      setError("Failed to fetch categories");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -83,26 +48,39 @@ const CategoryManager = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editingCategory) {
-      // Update existing category
-      setCategories(
-        categories.map((category) =>
-          category.id === editingCategory.id
-            ? { ...formData, id: editingCategory.id }
-            : category
-        )
-      );
-    } else {
-      // Add new category
-      const newCategory = {
-        ...formData,
-        id: categories.length + 1,
-      };
-      setCategories([...categories, newCategory]);
+    try {
+      let response;
+      if (editingCategory) {
+        // Update existing category
+        response = await apiService.request(`/api/v1/admin/categories/${editingCategory._id}`, {
+          method: 'PUT',
+          body: JSON.stringify(formData),
+          includeAuth: true,
+          isAdmin: true
+        });
+      } else {
+        // Add new category
+        response = await apiService.request('/api/v1/admin/categories', {
+          method: 'POST',
+          body: JSON.stringify(formData),
+          includeAuth: true,
+          isAdmin: true
+        });
+      }
+
+      if (response.success) {
+        // Refresh the categories list
+        await fetchCategories();
+        resetForm();
+      } else {
+        setError(response.error || "Failed to save category");
+      }
+    } catch (err) {
+      console.error("Error saving category:", err);
+      setError("Failed to save category");
     }
-    resetForm();
   };
 
   const handleEdit = (category) => {
@@ -119,9 +97,25 @@ const CategoryManager = () => {
     setShowForm(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this category?")) {
-      setCategories(categories.filter((category) => category.id !== id));
+      try {
+        const response = await apiService.request(`/api/v1/admin/categories/${id}`, {
+          method: 'DELETE',
+          includeAuth: true,
+          isAdmin: true
+        });
+        
+        if (response.success) {
+          // Refresh the categories list
+          await fetchCategories();
+        } else {
+          setError(response.error || "Failed to delete category");
+        }
+      } catch (err) {
+        console.error("Error deleting category:", err);
+        setError("Failed to delete category");
+      }
     }
   };
 
@@ -154,6 +148,13 @@ const CategoryManager = () => {
           {showForm ? "Cancel" : "Add New Category"}
         </button>
       </div>
+
+      {error && (
+        <div className="alert alert-danger">
+          {error}
+          <button className="btn btn-link" onClick={fetchCategories}>Retry</button>
+        </div>
+      )}
 
       {showForm && (
         <div className="form-card">
@@ -280,7 +281,7 @@ const CategoryManager = () => {
             </thead>
             <tbody>
               {categories.map((category) => (
-                <tr key={category.id}>
+                <tr key={category._id}>
                   <td>{category.name}</td>
                   <td>{category.type}</td>
                   <td>
@@ -319,7 +320,7 @@ const CategoryManager = () => {
                     </button>
                     <button
                       className="btn btn-sm btn-danger"
-                      onClick={() => handleDelete(category.id)}
+                      onClick={() => handleDelete(category._id)}
                     >
                       Delete
                     </button>

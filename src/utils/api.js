@@ -4,28 +4,46 @@ class ApiService {
   constructor() {
     this.baseURL = baseUrl;
     this.token = localStorage.getItem('token');
+    this.adminToken = localStorage.getItem('adminToken');
   }
 
-  // Set token for authenticated requests
+  // Set user token for authenticated requests
   setToken(token) {
     this.token = token;
     localStorage.setItem('token', token);
   }
 
-  // Remove token
+  // Set admin token for admin requests
+  setAdminToken(token) {
+    this.adminToken = token;
+    localStorage.setItem('adminToken', token);
+  }
+
+  // Remove user token
   removeToken() {
     this.token = null;
     localStorage.removeItem('token');
   }
 
+  // Remove admin token
+  removeAdminToken() {
+    this.adminToken = null;
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminUser');
+  }
+
   // Get default headers
-  getHeaders(includeAuth = false) {
+  getHeaders(includeAuth = false, isAdmin = false) {
     const headers = {
       'Content-Type': 'application/json',
     };
 
-    if (includeAuth && this.token) {
-      headers['Authorization'] = `Bearer ${this.token}`;
+    if (includeAuth) {
+      if (isAdmin && this.adminToken) {
+        headers['Authorization'] = `Bearer ${this.adminToken}`;
+      } else if (this.token) {
+        headers['Authorization'] = `Bearer ${this.token}`;
+      }
     }
 
     return headers;
@@ -35,7 +53,7 @@ class ApiService {
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`;
     const config = {
-      headers: this.getHeaders(options.includeAuth),
+      headers: this.getHeaders(options.includeAuth, options.isAdmin),
       ...options,
     };
 
@@ -91,6 +109,19 @@ class ApiService {
     return data;
   }
 
+  async adminLogin(credentials) {
+    const data = await this.request('/api/v1/auth/admin/login', {
+      method: 'POST',
+      body: JSON.stringify(credentials),
+    });
+
+    if (data.token) {
+      this.setAdminToken(data.token);
+    }
+
+    return data;
+  }
+
   async generateOTP(phoneData) {
     return this.request('/api/v1/auth/otp/generate', {
       method: 'POST',
@@ -119,6 +150,11 @@ class ApiService {
 
   async logout() {
     this.removeToken();
+    return { success: true };
+  }
+
+  async adminLogout() {
+    this.removeAdminToken();
     return { success: true };
   }
 
@@ -213,6 +249,49 @@ class ApiService {
   // Location methods
   async checkPincode(pincode) {
     return this.request(`/api/v1/locations/check/${pincode}`);
+  }
+
+  // Admin methods
+  async getAdminStats() {
+    return this.request('/api/v1/admin/stats', {
+      includeAuth: true,
+      isAdmin: true
+    });
+  }
+
+  async getAdminUsers() {
+    return this.request('/api/v1/admin/users', {
+      includeAuth: true,
+      isAdmin: true
+    });
+  }
+
+  async getAdminTests() {
+    return this.request('/api/v1/admin/tests', {
+      includeAuth: true,
+      isAdmin: true
+    });
+  }
+
+  async getAdminCategories() {
+    return this.request('/api/v1/admin/categories', {
+      includeAuth: true,
+      isAdmin: true
+    });
+  }
+
+  async getAdminOrders() {
+    return this.request('/api/v1/admin/orders', {
+      includeAuth: true,
+      isAdmin: true
+    });
+  }
+
+  async getAdminBanners() {
+    return this.request('/api/v1/admin/banners', {
+      includeAuth: true,
+      isAdmin: true
+    });
   }
 }
 

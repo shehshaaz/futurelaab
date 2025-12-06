@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   BarChart,
@@ -16,44 +16,57 @@ import {
 import TestManager from "./TestManager";
 import CategoryManager from "./CategoryManager";
 import OrderManager from "./OrderManager";
+import apiService from "../utils/api";
 import "./AdminDashboard.css";
-
-// Mock data for demonstration
-const mockTestData = [
-  { name: "Blood Test", category: "Health Checkup", price: 499, orders: 120 },
-  { name: "Diabetes Panel", category: "Special Care", price: 899, orders: 85 },
-  { name: "Thyroid Test", category: "Vital Organ", price: 699, orders: 95 },
-  { name: "Liver Function", category: "Vital Organ", price: 799, orders: 78 },
-  { name: "Kidney Profile", category: "Vital Organ", price: 899, orders: 65 },
-];
-
-const mockOrderData = [
-  { name: "Jan", orders: 45 },
-  { name: "Feb", orders: 52 },
-  { name: "Mar", orders: 48 },
-  { name: "Apr", orders: 78 },
-  { name: "May", orders: 65 },
-  { name: "Jun", orders: 82 },
-];
-
-const mockCategoryData = [
-  { name: "Health Checkup", value: 35 },
-  { name: "Special Care", value: 25 },
-  { name: "Vital Organ", value: 20 },
-  { name: "Women Care", value: 10 },
-  { name: "Men Care", value: 10 },
-];
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
 const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [stats, setStats] = useState({
+    usersCount: 0,
+    testsCount: 0,
+    ordersCount: 0,
+    categoriesCount: 0,
+    bannersCount: 0,
+    recentOrders: []
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      setLoading(true);
+      // Set admin token for authenticated requests
+      const token = localStorage.getItem("adminToken");
+      if (token) {
+        apiService.setToken(token);
+      }
+
+      const response = await apiService.getAdminStats();
+      
+      if (response.success) {
+        setStats(response.data);
+      } else {
+        setError(response.error || "Failed to fetch stats");
+      }
+    } catch (err) {
+      console.error("Error fetching stats:", err);
+      setError("Failed to fetch dashboard statistics");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = () => {
     // Remove admin token and redirect to login
-    localStorage.removeItem("adminToken");
+    apiService.adminLogout();
     navigate("/admin/login");
   };
 
@@ -106,7 +119,7 @@ const AdminDashboard = () => {
                   <i className="fas fa-flask"></i>
                 </div>
                 <div className="stat-card-info">
-                  <h3>128</h3>
+                  <h3>{stats.testsCount}</h3>
                   <p>Total Tests</p>
                 </div>
               </div>
@@ -115,7 +128,7 @@ const AdminDashboard = () => {
                   <i className="fas fa-shopping-cart"></i>
                 </div>
                 <div className="stat-card-info">
-                  <h3>342</h3>
+                  <h3>{stats.ordersCount}</h3>
                   <p>Total Orders</p>
                 </div>
               </div>
@@ -124,17 +137,17 @@ const AdminDashboard = () => {
                   <i className="fas fa-users"></i>
                 </div>
                 <div className="stat-card-info">
-                  <h3>1,254</h3>
+                  <h3>{stats.usersCount}</h3>
                   <p>Total Users</p>
                 </div>
               </div>
               <div className="stat-card">
                 <div className="stat-card-icon bg-info">
-                  <i className="fas fa-rupee-sign"></i>
+                  <i className="fas fa-list"></i>
                 </div>
                 <div className="stat-card-info">
-                  <h3>₹4,82,340</h3>
-                  <p>Total Revenue</p>
+                  <h3>{stats.categoriesCount}</h3>
+                  <p>Categories</p>
                 </div>
               </div>
             </div>
@@ -142,116 +155,62 @@ const AdminDashboard = () => {
             {/* Charts */}
             <div className="charts-container">
               <div className="chart-card">
-                <h3>Orders Overview</h3>
+                <h3>Recent Orders</h3>
                 <div className="chart-wrapper">
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={mockOrderData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Bar dataKey="orders" fill="#8884d8" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-
-              <div className="chart-card">
-                <h3>Category Distribution</h3>
-                <div className="chart-wrapper">
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie
-                        data={mockCategoryData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                        label={({ name, percent }) =>
-                          `${name} ${(percent * 100).toFixed(0)}%`
-                        }
-                      >
-                        {mockCategoryData.map((entry, index) => (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={COLORS[index % COLORS.length]}
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
+                  {stats.recentOrders && stats.recentOrders.length > 0 ? (
+                    <div className="recent-orders-table">
+                      <table className="table">
+                        <thead>
+                          <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {stats.recentOrders.map((order) => (
+                            <tr key={order._id}>
+                              <td>{order._id.substring(0, 8)}...</td>
+                              <td>{order.user ? order.user.name : 'N/A'}</td>
+                              <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+                              <td>
+                                <span className={`status-badge status-${order.orderStatus}`}>
+                                  {order.orderStatus}
+                                </span>
+                              </td>
+                              <td>₹{order.totalPrice}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <p>No recent orders found</p>
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* Recent Activity */}
-            <div className="recent-activity">
-              <h3>Recent Orders</h3>
-              <div className="activity-table">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Order ID</th>
-                      <th>Customer</th>
-                      <th>Date</th>
-                      <th>Amount</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>#FL2025001</td>
-                      <td>John Doe</td>
-                      <td>2025-09-20</td>
-                      <td>₹1,299</td>
-                      <td>
-                        <span className="status delivered">Delivered</span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>#FL2025002</td>
-                      <td>Jane Smith</td>
-                      <td>2025-09-20</td>
-                      <td>₹899</td>
-                      <td>
-                        <span className="status processing">Processing</span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>#FL2025003</td>
-                      <td>Robert Johnson</td>
-                      <td>2025-09-19</td>
-                      <td>₹1,599</td>
-                      <td>
-                        <span className="status shipped">Shipped</span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>#FL2025004</td>
-                      <td>Emily Davis</td>
-                      <td>2025-09-19</td>
-                      <td>₹699</td>
-                      <td>
-                        <span className="status pending">Pending</span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>#FL2025005</td>
-                      <td>Michael Wilson</td>
-                      <td>2025-09-18</td>
-                      <td>₹2,199</td>
-                      <td>
-                        <span className="status delivered">Delivered</span>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+            {/* Loading and Error States */}
+            {loading && (
+              <div className="loading-container">
+                <div className="spinner"></div>
+                <p>Loading dashboard data...</p>
               </div>
-            </div>
+            )}
+
+            {error && (
+              <div className="error-container">
+                <div className="alert alert-danger">
+                  {error}
+                  <button className="btn btn-primary" onClick={fetchStats}>
+                    Retry
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         );
     }
@@ -261,74 +220,93 @@ const AdminDashboard = () => {
     <div className="admin-dashboard">
       {/* Sidebar */}
       <div className={`admin-sidebar ${sidebarOpen ? "open" : ""}`}>
-        <div className="admin-sidebar-header">
+        <div className="sidebar-header">
           <h2>FutureLabs Admin</h2>
+          <button
+            className="sidebar-toggle"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            <i className="fas fa-bars"></i>
+          </button>
         </div>
-        <ul className="admin-nav">
-          <li
-            className={activeTab === "dashboard" ? "active" : ""}
-            onClick={() => setActiveTab("dashboard")}
-          >
-            <i className="fas fa-tachometer-alt"></i> Dashboard
+        <ul className="sidebar-menu">
+          <li>
+            <button
+              className={activeTab === "dashboard" ? "active" : ""}
+              onClick={() => setActiveTab("dashboard")}
+            >
+              <i className="fas fa-tachometer-alt"></i>
+              <span>Dashboard</span>
+            </button>
           </li>
-          <li
-            className={activeTab === "tests" ? "active" : ""}
-            onClick={() => setActiveTab("tests")}
-          >
-            <i className="fas fa-flask"></i> Tests & Packages
+          <li>
+            <button
+              className={activeTab === "tests" ? "active" : ""}
+              onClick={() => setActiveTab("tests")}
+            >
+              <i className="fas fa-flask"></i>
+              <span>Tests</span>
+            </button>
           </li>
-          <li
-            className={activeTab === "categories" ? "active" : ""}
-            onClick={() => setActiveTab("categories")}
-          >
-            <i className="fas fa-tags"></i> Categories
+          <li>
+            <button
+              className={activeTab === "categories" ? "active" : ""}
+              onClick={() => setActiveTab("categories")}
+            >
+              <i className="fas fa-list"></i>
+              <span>Categories</span>
+            </button>
           </li>
-          <li
-            className={activeTab === "orders" ? "active" : ""}
-            onClick={() => setActiveTab("orders")}
-          >
-            <i className="fas fa-shopping-cart"></i> Orders
+          <li>
+            <button
+              className={activeTab === "orders" ? "active" : ""}
+              onClick={() => setActiveTab("orders")}
+            >
+              <i className="fas fa-shopping-cart"></i>
+              <span>Orders</span>
+            </button>
           </li>
-          <li
-            className={activeTab === "users" ? "active" : ""}
-            onClick={() => setActiveTab("users")}
-          >
-            <i className="fas fa-users"></i> Users
+          <li>
+            <button
+              className={activeTab === "users" ? "active" : ""}
+              onClick={() => setActiveTab("users")}
+            >
+              <i className="fas fa-users"></i>
+              <span>Users</span>
+            </button>
           </li>
-          <li
-            className={activeTab === "reports" ? "active" : ""}
-            onClick={() => setActiveTab("reports")}
-          >
-            <i className="fas fa-chart-bar"></i> Reports
-          </li>
-          <li onClick={handleLogout}>
-            <i className="fas fa-sign-out-alt"></i> Logout
+          <li>
+            <button
+              className={activeTab === "reports" ? "active" : ""}
+              onClick={() => setActiveTab("reports")}
+            >
+              <i className="fas fa-chart-bar"></i>
+              <span>Reports</span>
+            </button>
           </li>
         </ul>
+        <div className="sidebar-footer">
+          <button className="btn btn-danger" onClick={handleLogout}>
+            <i className="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </button>
+        </div>
       </div>
 
       {/* Main Content */}
       <div className="admin-main">
-        {/* Header */}
-        <div className="admin-header">
-          <div className="admin-header-left">
-            <button
-              className="menu-toggle"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-            >
-              <i className="fas fa-bars"></i>
-            </button>
-            <h1>{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</h1>
-          </div>
-          <div className="admin-header-right">
-            <div className="admin-user">
-              <i className="fas fa-user-circle"></i>
-              <span>Admin User</span>
-            </div>
+        <div className="admin-topbar">
+          <button
+            className="sidebar-toggle"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            <i className="fas fa-bars"></i>
+          </button>
+          <div className="admin-user">
+            <i className="fas fa-user-circle"></i>
+            <span>Admin</span>
           </div>
         </div>
-
-        {/* Render active content */}
         {renderContent()}
       </div>
     </div>

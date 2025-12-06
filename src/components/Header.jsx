@@ -14,13 +14,13 @@ const Header = () => {
     const updateCartCount = () => {
       const cart = JSON.parse(localStorage.getItem("cart")) || [];
       const newCount = cart.length;
-      
+
       // Trigger pulse animation when cart count increases
       if (newCount > cartCount) {
         setCartPulse(true);
         setTimeout(() => setCartPulse(false), 600);
       }
-      
+
       setCartCount(newCount);
     };
 
@@ -57,7 +57,7 @@ const Header = () => {
     ripple.style.left = x + 'px';
     ripple.style.top = y + 'px';
     ripple.classList.add('ripple-effect');
-    
+
     button.appendChild(ripple);
     setTimeout(() => ripple.remove(), 600);
   };
@@ -152,45 +152,45 @@ const Header = () => {
         <div className="container-fluid bg-light">
           <div className="row align-items-center">
             {/* Logo Section */}
-           <div className="col-lg-2 col-md-3 col-sm-12 col-12">
-  <Link to="/" className="logo-bounce d-inline-block">
-    {/* Using flex display for favicon and logo alignment */}
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-      <img
-        src="/images/logo/favicon.jpg"
-        alt="Favicon"
-        className="favicon"
-        style={{ 
-          maxHeight: "30px", 
-          width: "auto",
-          marginRight: "10px",
-          transition: "transform 0.3s ease"
-        }}
-      />
-      <img
-        src="/images/logo/WhatsApp Image 2025-08-19 at 17.38.25_ee7be669.jpg"
-        alt="FutureLabs"
-        className="logo"
-        onError={(e) => {
-          e.target.onerror = null;
-          e.target.src = "/images/logo/favicon.jpg";
-        }}
-        style={{ 
-          maxHeight: "70px", 
-          width: "auto",
-          transition: "transform 0.3s ease"
-        }}
-      />
-    </div>
-  </Link>
-</div>
+            <div className="col-lg-3 col-md-3 col-sm-12 col-12">
+              <Link to="/" className="logo-bounce d-inline-block">
+                {/* Using flex display for favicon and logo alignment */}
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <img
+                    src="/images/logo/favicon.jpg"
+                    alt="Favicon"
+                    className="favicon"
+                    style={{
+                      maxHeight: "30px",
+                      width: "auto",
+                      marginRight: "10px",
+                      transition: "transform 0.3s ease"
+                    }}
+                  />
+                  <img
+                    src="/images/logo/WhatsApp Image 2025-08-19 at 17.38.25_ee7be669.jpg"
+                    alt="FutureLabs"
+                    className="logo"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/images/logo/favicon.jpg";
+                    }}
+                    style={{
+                      maxHeight: "70px",
+                      width: "auto",
+                      transition: "transform 0.3s ease"
+                    }}
+                  />
+                </div>
+              </Link>
+            </div>
 
 
             {/* Home + Search + Contact Us */}
             <div className="col-lg-6 col-md-5 col-sm-12 col-12 py-lg-3 py-md-2 d-flex align-items-center justify-content-center gap-3">
               {/* Home Button */}
-              <Link 
-                to="/" 
+              <Link
+                to="/"
                 className="btn btn-outline-primary btn-sm interactive-button"
                 style={buttonHoverStyle}
                 onClick={addRippleEffect}
@@ -204,8 +204,8 @@ const Header = () => {
               </div>
 
               {/* Contact Us Button */}
-              <Link 
-                to="/contact" 
+              <Link
+                to="/contact"
                 className="btn btn-outline-secondary btn-sm interactive-button"
                 style={buttonHoverStyle}
                 onClick={addRippleEffect}
@@ -222,8 +222,8 @@ const Header = () => {
                   to="/cart"
                   className={`cart cart-button me-2 ${cartPulse ? 'cart-pulse' : ''}`}
                   id="cart-button-desktop"
-                  style={{ 
-                    display: cartCount > 0 ? "inline-block" : "none",
+                  style={{
+                    display: "inline-block",
                     transition: 'transform 0.3s ease'
                   }}
                   onMouseEnter={(e) => {
@@ -238,12 +238,12 @@ const Header = () => {
                     className="offers"
                     alt="Cart"
                   />
-                  <span 
-                    className="cart-badge" 
+                  <span
+                    className="cart-badge"
                     id="cart-badge-desktop"
                     style={{ transition: 'transform 0.3s ease' }}
                   >
-                    {cartCount}
+                    {cartCount > 0 && cartCount}
                   </span>
                 </Link>
               </div>
@@ -307,8 +307,8 @@ const Header = () => {
                     src={`${process.env.PUBLIC_URL}/images/logo/favicon.jpg`}
                     alt="Favicon"
                     className="favicon"
-                    style={{ 
-                      maxHeight: "25px", 
+                    style={{
+                      maxHeight: "25px",
                       width: "auto",
                       marginRight: "8px",
                       transition: 'transform 0.3s ease'
@@ -322,8 +322,8 @@ const Header = () => {
                       e.target.onerror = null;
                       e.target.src = `${process.env.PUBLIC_URL}/images/logo/favicon.jpg`;
                     }}
-                    style={{ 
-                      maxHeight: "60px", 
+                    style={{
+                      maxHeight: "60px",
                       width: "auto",
                       transition: 'transform 0.3s ease'
                     }}
@@ -337,8 +337,8 @@ const Header = () => {
                   to="/cart"
                   className={`cart cart-button ${cartPulse ? 'cart-pulse' : ''}`}
                   id="cart-button-mobile"
-                  style={{ 
-                    display: cartCount > 0 ? "inline-block" : "none",
+                  style={{
+                    display: "inline-block",
                     transition: 'transform 0.3s ease'
                   }}
                   onTouchStart={(e) => {
@@ -353,12 +353,12 @@ const Header = () => {
                     className="offers"
                     alt="Cart"
                   />
-                  <span 
-                    className="cart-badge" 
+                  <span
+                    className="cart-badge"
                     id="cart-badge-mobile"
                     style={{ transition: 'transform 0.3s ease' }}
                   >
-                    {cartCount}
+                    {cartCount > 0 && cartCount}
                   </span>
                 </Link>
               </div>

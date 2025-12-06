@@ -12,10 +12,11 @@ const Cart = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const userId = searchParams.get("userId");
+  const userId = searchParams.get("userId") || localStorage.getItem("userId") || "temp-user-id";
 
   useEffect(() => {
     if (!userId) {
+      // If still no userId (unlikely with temp fallback), handle error
       navigate("/error");
       return;
     }

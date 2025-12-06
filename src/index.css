@@ -26,6 +26,12 @@ body {
   margin: 0 !important;
   padding: 0 !important;
   position: relative;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+img {
+  max-width: 100%;
+  height: auto;
 }
 
 /* Additional Green Background Layers */

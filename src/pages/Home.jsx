@@ -48,7 +48,7 @@ const Home = () => {
   const [direction, setDirection] = useState("right"); // 'left' or 'right'
 
   // special offers carousel
-    const packages = [
+  const packages = [
     {
       id: 1,
       title: "Full Body Checkup + 1 Special Profile Test FREE",
@@ -99,26 +99,31 @@ const Home = () => {
     },
   ];
 
-  const [current, setCurrent] = useState(0);
-  const total = packages.length;
+  const [offerCurrent, setOfferCurrent] = useState(0);
+  const [categoryCurrent, setCategoryCurrent] = useState(0);
 
-  const nextSlide = () => {
-    if (current < total - 1) {
+  const offerTotal = packages.length;
+  // chunkedCategories will be defined later, assuming we access it in render or useMemo
+  // We'll define handlers that don't depend on closure variables if possible, or define them after chunkedCategories if it's in render.
+  // Actually, chunkedCategories depends on categories state.
+
+  const nextOffer = () => {
+    if (offerCurrent < offerTotal - 1) {
       setDirection("right");
       setAnimationClass("slide-out-left");
       setTimeout(() => {
-        setCurrent((prev) => prev + 1);
+        setOfferCurrent((prev) => prev + 1);
         setAnimationClass("slide-in-right");
       }, 250);
     }
   };
 
-  const prevSlide = () => {
-    if (current > 0) {
+  const prevOffer = () => {
+    if (offerCurrent > 0) {
       setDirection("left");
       setAnimationClass("slide-out-right");
       setTimeout(() => {
-        setCurrent((prev) => prev - 1);
+        setOfferCurrent((prev) => prev - 1);
         setAnimationClass("slide-in-left");
       }, 250);
     }
@@ -246,7 +251,7 @@ const Home = () => {
       setError("Error adding item to cart. Please try again.");
     }
   };
-     const chunkedCategories = [];
+  const chunkedCategories = [];
   for (let i = 0; i < categories.length; i += 4) {
     chunkedCategories.push(categories.slice(i, i + 4));
   }
@@ -256,7 +261,7 @@ const Home = () => {
     chunkedAds.push(ads.slice(i, i + 4));
   }
 
-  
+
   const handleKnowMore = () => {
     navigate("/checkups");
   };
@@ -357,29 +362,32 @@ const Home = () => {
       )}
 
       {/* Hero Section */}
-     <section className="hero-section mb-4">
-      <div className="container-fluid p-0">
-        <Carousel fade interval={3000} controls={false} indicators={false}>
-          {["banner1.png", "banner2.png", "banner3.png"].map((image, index) => (
-            <Carousel.Item key={index}>
-              <img
-                className="d-block w-100 img-fluid hero-image"
-                src={`${process.env.PUBLIC_URL}/images/banners/${image}`}
-                alt={`Banner ${index + 1}`}
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = `${process.env.PUBLIC_URL}/images/banners/banner1.png`;
-                }}
-              />
-            </Carousel.Item>
-          ))}
-        </Carousel>
-      </div>
+      <section className="hero-section mb-4">
+        <div className="container-fluid p-0">
+          <Carousel fade interval={3000} controls={false} indicators={false}>
+            {["banner1.png", "banner2.png", "banner3.png"].map((image, index) => (
+              <Carousel.Item key={index}>
+                <img
+                  className="d-block w-100 img-fluid hero-image"
+                  src={`${process.env.PUBLIC_URL}/images/banners/${image}`}
+                  alt={`Banner ${index + 1}`}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = `${process.env.PUBLIC_URL}/images/banners/banner1.png`;
+                  }}
+                />
+              </Carousel.Item>
+            ))}
+          </Carousel>
+        </div>
 
-      {/* Custom styles */}
-      <style>{`
+        {/* Custom styles */}
+        <style>{`
         .hero-image {
-          height: clamp(250px, 40vw, 500px);
+          height: auto;
+          min-height: 250px;
+          max-height: 500px;
+          width: 100%;
           object-fit: cover;
           object-position: center;
           border-radius: 0;
@@ -395,10 +403,10 @@ const Home = () => {
           }
         }
       `}</style>
-    </section>
+      </section>
 
       {/* Pin Code Service Availability Section */}
-   {/* <section
+      {/* <section
       className="py-5"
       style={{
         background: "linear-gradient(135deg, white 0%, #77d9cf 100%)",
@@ -526,7 +534,7 @@ const Home = () => {
 }; */}
 
 
-  {/* <section className="py-10 bg-gray-50">
+      {/* <section className="py-10 bg-gray-50">
         <div className="container mx-auto px-4">
           <PincodeChecker />
         </div>
@@ -534,7 +542,7 @@ const Home = () => {
 
 
 
-   {/* Pin Code Service Availability Section */}
+      {/* Pin Code Service Availability Section */}
       <section className="py-5 bg-light">
         <div className="container">
           <div className="row justify-content-center">
@@ -599,9 +607,8 @@ const Home = () => {
                   {serviceAvailable !== null && (
                     <div className="mt-4">
                       <div
-                        className={`alert ${
-                          serviceAvailable ? "alert-success" : "alert-warning"
-                        } border-0 shadow-sm`}
+                        className={`alert ${serviceAvailable ? "alert-success" : "alert-warning"
+                          } border-0 shadow-sm`}
                         role="alert"
                       >
                         <div className="d-flex align-items-start">
@@ -678,10 +685,10 @@ const Home = () => {
       </section>
 
       {/* Categories Section */}
-{/* <section className="py-5 bg-light">
+      {/* <section className="py-5 bg-light">
   <div className="container p-3 rounded-3"  style={{ backgroundColor: 'rgba(224, 247, 247, 0.7)' }}> */}
-    {/* Header Section */}
-    {/* <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-5 text-center text-md-start">
+      {/* Header Section */}
+      {/* <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-5 text-center text-md-start">
    <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center align-items-start bg-light p-3 rounded-3 shadow-sm">
 
   <div>
@@ -710,178 +717,215 @@ const Home = () => {
   </Link>
 </div>
 </div> */}
-{/* 
+      {/* 
   </div>
 </section> */}
 
-    {/* Cards Section */}
-<section className="py-5">
-  <div className="container">
-    {/* Section Header */}
-    <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">  
-      <div className="align-items-md-center ">
-        <h2 className="fw-bold mb-1"
-              style={{ color: "rgb(0, 162, 173)", fontSize: "1.5rem"}}>
-          Money-Saving Packages
-        </h2>
-        <p className="mb-0 fw-semibold" style={{ color: "rgb(255, 128, 0)" }}>
-          Upto 75% Discount
-        </p>
-      </div>
- 
-
-      <Link
-        to="/completehealth"
-        className="btn fw-semibold text-white mt-3 mt-md-0 px-4 py-2"
-        style={{
-          background: "linear-gradient(180deg, #FFA500 0%, #FF7A00 100%)",
-          border: "none",
-          fontSize: "1rem",
-          borderRadius: "8px",
-          boxShadow: "0 3px 8px rgba(0,0,0,0.2)",
-        }}
-      >
-        VIEW ALL
-      </Link>
-    </div>
-
-    {/* Carousel */}
-    <div className="position-relative">
-      <div className="overflow-hidden">
-        <div 
-          className="d-flex transition-container"
-          style={{ 
-            transform: `translateX(-${current * 100}%)`,
-            transition: 'transform 0.5s ease-in-out'
-          }}
-        >
-          {chunkedCategories.map((group, index) => (
-            <div 
-              key={index} 
-              className="d-flex flex-wrap justify-content-center w-100"
-              style={{ minWidth: '100%' }}
-            >
-              {group.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="col-6 col-sm-6 col-md-3 col-lg-3 p-2"
-                >
-                  <Link
-                    to={`/completehealth?tab=${encodeURIComponent(item.name)}`}
-                    className="text-decoration-none"
-                  >
-                    <div
-                      className="card border-0 rounded-4 overflow-hidden shadow-sm h-100 position-relative money-saving-card"
-                      style={{
-                        borderRadius: "14px",
-                        transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = "translateY(-6px)";
-                        e.currentTarget.style.boxShadow =
-                          "0 8px 20px rgba(0,0,0,0.15)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = "translateY(0)";
-                        e.currentTarget.style.boxShadow =
-                          "0 4px 10px rgba(0,0,0,0.05)";
-                      }}
-                    >
-                      <div className="position-relative overflow-hidden rounded-top-4">
-                        <img
-                          className="img-fluid w-100 money-saving-image"
-                          src={getImageUrl(item.imagePath)}
-                          alt={item.name}
-                          style={{
-                            height: "160px",
-                            objectFit: "cover",
-                            transition: "transform 0.3s ease",
-                            borderTopLeftRadius: "14px",
-                            borderTopRightRadius: "14px",
-                          }}
-                          onMouseEnter={(e) =>
-                            (e.currentTarget.style.transform = "scale(1.05)")
-                          }
-                          onMouseLeave={(e) =>
-                            (e.currentTarget.style.transform = "scale(1)")
-                          }
-                        />
-                      </div>
-                      <div
-                        className="text-center py-2 rounded-bottom-4"
-                        style={{
-                          backgroundColor: "rgb(119, 217, 207)",
-                          color: "#004d4d",
-                          fontWeight: "600",
-                          fontSize: "0.95rem",
-                        }}
-                      >
-                        {item.name}
-                      </div>
-                    </div>
-                  </Link>
-                </div>
-              ))}
+      {/* Cards Section */}
+      <section className="py-5">
+        <div className="container">
+          {/* Section Header */}
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+            <div className="align-items-md-center ">
+              <h2 className="fw-bold mb-1"
+                style={{ color: "rgb(0, 162, 173)", fontSize: "1.5rem" }}>
+                Money-Saving Packages
+              </h2>
+              <p className="mb-0 fw-semibold" style={{ color: "rgb(255, 128, 0)" }}>
+                Upto 75% Discount
+              </p>
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Carousel Navigation Arrows */}
-      <div className="d-flex justify-content-center align-items-center mt-4 w-100" style={{ minHeight: "60px" }}>
-        <button
-          className="btn btn-primary rounded-circle shadow me-3"
-          style={{
-            width: "45px",
-            height: "45px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "rgba(0, 162, 173, 0.9)",
-            border: "none",
-          }}
-          onClick={prevSlide}
-          disabled={current === 0}
-        >
-          <i className="bi bi-chevron-left text-white" style={{ fontSize: "1.2rem" }}></i>
-        </button>
-        
-        {/* Page Indicator */}
-        <div className="d-flex align-items-center mx-3">
-          {chunkedCategories.map((_, index) => (
-            <span
-              key={index}
-              className={`rounded-circle mx-1 ${index === current ? 'bg-primary' : 'bg-secondary'}`}
+
+            <Link
+              to="/completehealth"
+              className="btn fw-semibold text-white mt-3 mt-md-0 px-4 py-2"
               style={{
-                width: "10px",
-                height: "10px",
-                opacity: index === current ? 1 : 0.5,
+                background: "linear-gradient(180deg, #FFA500 0%, #FF7A00 100%)",
+                border: "none",
+                fontSize: "1rem",
+                borderRadius: "8px",
+                boxShadow: "0 3px 8px rgba(0,0,0,0.2)",
               }}
-            ></span>
-          ))}
-        </div>
-        
-        <button
-          className="btn btn-primary rounded-circle shadow"
-          style={{
-            width: "45px",
-            height: "45px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "rgba(0, 162, 173, 0.9)",
-            border: "none",
-          }}
-          onClick={nextSlide}
-          disabled={current === chunkedCategories.length - 1}
-        >
-          <i className="bi bi-chevron-right text-white" style={{ fontSize: "1.2rem" }}></i>
-        </button>
-      </div>
-    </div>
+            >
+              VIEW ALL
+            </Link>
+          </div>
 
-    {/* Responsive Styles */}
-    <style>{`
+          {/* Carousel */}
+          <div className="position-relative">
+            <div className="overflow-hidden">
+              <div
+                className="d-flex transition-container"
+                style={{
+                  transform: `translateX(-${categoryCurrent * 100}%)`,
+                  transition: 'transform 0.5s ease-in-out'
+                }}
+              >
+                {chunkedCategories.map((group, index) => (
+                  <div
+                    key={index}
+                    className="d-flex flex-wrap justify-content-center w-100"
+                    style={{ minWidth: '100%' }}
+                  >
+                    {group.map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="col-6 col-sm-6 col-md-3 col-lg-3 p-2"
+                      >
+                        <Link
+                          to={`/completehealth?tab=${encodeURIComponent(item.name)}`}
+                          className="text-decoration-none"
+                        >
+                          <div
+                            className="card overflow-hidden shadow-sm h-100 position-relative money-saving-card"
+                            style={{
+                              borderRadius: "16px",
+                              border: "1px solid #e0e0e0",
+                              transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                              backgroundColor: "#fff"
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.transform = "translateY(-10px)";
+                              e.currentTarget.style.boxShadow = "0 15px 30px rgba(0, 162, 173, 0.15)";
+                              e.currentTarget.style.borderColor = "rgba(0, 162, 173, 0.3)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.transform = "translateY(0)";
+                              e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.05)";
+                              e.currentTarget.style.borderColor = "#e0e0e0";
+                            }}
+                          >
+                            <div className="position-relative overflow-hidden">
+                              <img
+                                className="img-fluid w-100 money-saving-image"
+                                src={getImageUrl(item.imagePath)}
+                                alt={item.name}
+                                style={{
+                                  height: "180px",
+                                  objectFit: "cover",
+                                  transition: "transform 0.5s ease",
+                                }}
+                                onMouseEnter={(e) =>
+                                  (e.currentTarget.style.transform = "scale(1.1)")
+                                }
+                                onMouseLeave={(e) =>
+                                  (e.currentTarget.style.transform = "scale(1)")
+                                }
+                              />
+                              <div
+                                className="position-absolute w-100 h-100 top-0 start-0"
+                                style={{
+                                  background: "linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.4) 100%)",
+                                  pointerEvents: "none"
+                                }}
+                              ></div>
+                            </div>
+                            <div
+                              className="text-center py-3 px-2"
+                              style={{
+                                backgroundColor: "#fff",
+                                borderTop: "1px solid #f0f0f0"
+                              }}
+                            >
+                              <h6 className="mb-0 fw-bold" style={{ color: "#004d4d", fontSize: "1rem" }}>
+                                {item.name}
+                              </h6>
+                            </div>
+                          </div>
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Carousel Navigation Arrows */}
+            <div className="d-flex justify-content-center align-items-center mt-4 w-100 gap-3">
+              <button
+                className="btn rounded-circle shadow-sm d-flex align-items-center justify-content-center nav-arrow-btn"
+                style={{
+                  width: "50px",
+                  height: "50px",
+                  backgroundColor: categoryCurrent === 0 ? "#f0f0f0" : "#fff",
+                  border: "1px solid #e0e0e0",
+                  color: categoryCurrent === 0 ? "#ccc" : "#00a2ad",
+                  transition: "all 0.3s ease",
+                  cursor: categoryCurrent === 0 ? "not-allowed" : "pointer"
+                }}
+                onClick={() => setCategoryCurrent(prev => Math.max(0, prev - 1))}
+                disabled={categoryCurrent === 0}
+                onMouseEnter={(e) => {
+                  if (categoryCurrent !== 0) {
+                    e.currentTarget.style.backgroundColor = "#00a2ad";
+                    e.currentTarget.style.color = "#fff";
+                    e.currentTarget.style.transform = "translateX(-3px)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (categoryCurrent !== 0) {
+                    e.currentTarget.style.backgroundColor = "#fff";
+                    e.currentTarget.style.color = "#00a2ad";
+                    e.currentTarget.style.transform = "translateX(0)";
+                  }
+                }}
+              >
+                <i className="bi bi-arrow-left" style={{ fontSize: "1.4rem" }}></i>
+              </button>
+
+              {/* Page Indicator */}
+              <div className="d-flex align-items-center bg-white px-3 py-2 rounded-pill shadow-sm border">
+                {chunkedCategories.map((_, index) => (
+                  <span
+                    key={index}
+                    className={`rounded-circle mx-1 transition-all`}
+                    style={{
+                      width: index === categoryCurrent ? "24px" : "8px",
+                      height: "8px",
+                      backgroundColor: index === categoryCurrent ? "#00a2ad" : "#e0e0e0",
+                      borderRadius: "4px",
+                      transition: "all 0.3s ease"
+                    }}
+                  ></span>
+                ))}
+              </div>
+
+              <button
+                className="btn rounded-circle shadow-sm d-flex align-items-center justify-content-center nav-arrow-btn"
+                style={{
+                  width: "50px",
+                  height: "50px",
+                  backgroundColor: categoryCurrent === chunkedCategories.length - 1 ? "#f0f0f0" : "#fff",
+                  border: "1px solid #e0e0e0",
+                  color: categoryCurrent === chunkedCategories.length - 1 ? "#ccc" : "#00a2ad",
+                  transition: "all 0.3s ease",
+                  cursor: categoryCurrent === chunkedCategories.length - 1 ? "not-allowed" : "pointer"
+                }}
+                onClick={() => setCategoryCurrent(prev => Math.min(chunkedCategories.length - 1, prev + 1))}
+                disabled={categoryCurrent === chunkedCategories.length - 1}
+                onMouseEnter={(e) => {
+                  if (categoryCurrent !== chunkedCategories.length - 1) {
+                    e.currentTarget.style.backgroundColor = "#00a2ad";
+                    e.currentTarget.style.color = "#fff";
+                    e.currentTarget.style.transform = "translateX(3px)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (categoryCurrent !== chunkedCategories.length - 1) {
+                    e.currentTarget.style.backgroundColor = "#fff";
+                    e.currentTarget.style.color = "#00a2ad";
+                    e.currentTarget.style.transform = "translateX(0)";
+                  }
+                }}
+              >
+                <i className="bi bi-arrow-right" style={{ fontSize: "1.4rem" }}></i>
+              </button>
+            </div>
+          </div>
+
+          {/* Responsive Styles */}
+          <style>{`
       .transition-container {
         display: flex;
       }
@@ -949,8 +993,8 @@ const Home = () => {
         }
       }
     `}</style>
-  </div>
-</section>
+        </div>
+      </section>
 
 
 
@@ -960,51 +1004,51 @@ const Home = () => {
 
 
 
- {/* Healthcare Banner Section */}
-<section className="py-4 bg-light">
-  <div className="container">
-    <div
-      className="d-flex flex-column flex-md-row align-items-center justify-content-center bg-white shadow-sm p-3 p-md-4 mx-auto"
-      style={{
-        borderRadius: "16px",
-        maxWidth: "650px",
-        background: "linear-gradient(90deg, #eafff8 0%, #d8fff0 100%)",
-      }}
-    >
-      {/* Left Side - Illustration */}
-      <div className="me-md-4 mb-3 mb-md-0 text-center">
-        <img
-          src={`${process.env.PUBLIC_URL}/images/delivery-doctor.png`}
-          alt="Home Visit Icon"
-          style={{
-            width: "120px",
-            height: "auto",
-          }}
-        />
-      </div>
+      {/* Healthcare Banner Section */}
+      <section className="py-4 bg-light">
+        <div className="container">
+          <div
+            className="d-flex flex-column flex-md-row align-items-center justify-content-center bg-white shadow-sm p-3 p-md-4 mx-auto"
+            style={{
+              borderRadius: "16px",
+              maxWidth: "650px",
+              background: "linear-gradient(90deg, #eafff8 0%, #d8fff0 100%)",
+            }}
+          >
+            {/* Left Side - Illustration */}
+            <div className="me-md-4 mb-3 mb-md-0 text-center">
+              <img
+                src={`${process.env.PUBLIC_URL}/images/delivery-doctor.png`}
+                alt="Home Visit Icon"
+                style={{
+                  width: "120px",
+                  height: "auto",
+                }}
+              />
+            </div>
 
-      {/* Right Side - Text Content */}
-      <div className="text-center text-md-start">
-        <h5
-          className="fw-bold mb-1"
-          style={{ color: "#E53935", fontSize: "1.25rem" }}
-        >
-          Free - Home Visit
-        </h5>
-        <h4
-          className="fw-bold mb-2"
-          style={{ color: "#B71C1C", fontSize: "1.5rem" }}
-        >
-          in Bengaluru
-        </h4>
-        <p className="mb-0 fw-semibold" style={{ color: "#2E7D32" }}>
-          If Bill Amount 1k
-        </p>
-      </div>
-    </div>
-  </div>
+            {/* Right Side - Text Content */}
+            <div className="text-center text-md-start">
+              <h5
+                className="fw-bold mb-1"
+                style={{ color: "#E53935", fontSize: "1.25rem" }}
+              >
+                Free - Home Visit
+              </h5>
+              <h4
+                className="fw-bold mb-2"
+                style={{ color: "#B71C1C", fontSize: "1.5rem" }}
+              >
+                in Bengaluru
+              </h4>
+              <p className="mb-0 fw-semibold" style={{ color: "#2E7D32" }}>
+                If Bill Amount 1k
+              </p>
+            </div>
+          </div>
+        </div>
 
-  <style>{`
+        <style>{`
     /* Mobile Responsive Adjustments */
     @media (max-width: 768px) {
       section div.container > div {
@@ -1025,177 +1069,233 @@ const Home = () => {
       }
     }
   `}</style>
-</section>
+      </section>
 
 
 
 
 
       {/* Special Offer Card */}
- 
-   <section className="py-4">
-      <div className="container">
-        {/* Header */}
-        <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 ">
-          <div>
-            <h2
-              className="fw-bold mb-1"
-              style={{ color: "rgb(0, 162, 173)", fontSize: "1.5rem" }}
-            >
-              Special Offers <br />
-              <span style={{ color: "rgb(255, 128, 0)" }}>Upto 75% Discount</span>
-            </h2>
-          </div>
-          <Link
-            to="/completehealth"
-            className="btn text-white fw-semibold shadow-sm px-4 py-2"
-            style={{
-              background: "linear-gradient(180deg, #FFA500 0%, #FF7A00 100%)",
-              border: "none",
-              fontSize: "1rem",
-              borderRadius: "8px",
-            }}
-          >
-            VIEW ALL
-          </Link>
-        </div>
 
-        {/* Carousel */}
-        <div className="position-relative overflow-hidden text-center">
-          <div
-            className="d-flex justify-content-center align-items-center position-relative w-100"
-            style={{
-              minHeight: "420px",
-            }}
-          >
-            {/* Single Card Display with Animation */}
-            <div
-              key={packages[current].id}
-              className="card shadow-sm border-0 text-center position-relative special-offer-card mx-auto animate-slide"
+      <section className="py-4">
+        <div className="container">
+          {/* Header */}
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 ">
+            <div>
+              <h2
+                className="fw-bold mb-1"
+                style={{ color: "rgb(0, 162, 173)", fontSize: "1.5rem" }}
+              >
+                Special Offers <br />
+                <span style={{ color: "rgb(255, 128, 0)" }}>Upto 75% Discount</span>
+              </h2>
+            </div>
+            <Link
+              to="/completehealth"
+              className="btn text-white fw-semibold shadow-sm px-4 py-2"
               style={{
-                borderRadius: "20px",
-                overflow: "hidden",
-                background: "#fff",
-                boxShadow: "0 12px 25px rgba(0,0,0,0.3)",
-                maxHeight: "380px",
-                width: "100%",
-                maxWidth: "320px",
+                background: "linear-gradient(180deg, #FFA500 0%, #FF7A00 100%)",
+                border: "none",
+                fontSize: "1rem",
+                borderRadius: "8px",
               }}
             >
-              {/* Discount Badge */}
-              <span
-                className="position-absolute bg-danger text-white fw-bold px-2 py-1 rounded-end"
-                style={{ top: "10px", left: "0", fontSize: "0.8rem" }}
+              VIEW ALL
+            </Link>
+          </div>
+
+          {/* Carousel */}
+          <div className="position-relative overflow-hidden text-center">
+            <div
+              className="d-flex justify-content-center align-items-center position-relative w-100"
+              style={{
+                minHeight: "420px",
+              }}
+            >
+              {/* Single Card Display with Animation */}
+              <div
+                key={packages[offerCurrent].id}
+                className="card text-center position-relative special-offer-card mx-auto animate-slide"
+                style={{
+                  borderRadius: "20px",
+                  overflow: "hidden",
+                  background: "#fff",
+                  border: "1px solid #e0e0e0",
+                  boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+                  transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                  maxHeight: "420px",
+                  width: "100%",
+                  maxWidth: "340px",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-10px)";
+                  e.currentTarget.style.boxShadow = "0 20px 40px rgba(0, 162, 173, 0.2)";
+                  e.currentTarget.style.borderColor = "rgba(0, 162, 173, 0.3)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "0 10px 25px rgba(0,0,0,0.1)";
+                  e.currentTarget.style.borderColor = "#e0e0e0";
+                }}
               >
-                56% OFF
-              </span>
+                {/* Discount Badge */}
+                <span
+                  className="position-absolute bg-danger text-white fw-bold px-2 py-1 rounded-end"
+                  style={{ top: "10px", left: "0", fontSize: "0.8rem" }}
+                >
+                  56% OFF
+                </span>
 
-              {/* Image */}
-              <div className="overflow-hidden" style={{ height: "150px" }}>
-                <img
-                  src={packages[current].image}
-                  alt={packages[current].title}
-                  className="card-img-top w-100 h-100 object-fit-cover"
+                {/* Image */}
+                <div className="overflow-hidden position-relative" style={{ height: "180px" }}>
+                  <img
+                    src={packages[offerCurrent].image}
+                    alt={packages[offerCurrent].title}
+                    className="card-img-top w-100 h-100"
+                    style={{
+                      objectFit: "cover",
+                      transition: "transform 0.5s ease",
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.1)"}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                  />
+                  <div
+                    className="position-absolute w-100 h-100 top-0 start-0"
+                    style={{
+                      background: "linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.4) 100%)",
+                      pointerEvents: "none"
+                    }}
+                  ></div>
+                </div>
+
+                {/* Content */}
+                <div className="card-body py-3 px-3">
+                  <h6 className="fw-bold text-danger mb-2" style={{ fontSize: "1.1rem" }}>{packages[offerCurrent].title}</h6>
+                  <p className="text-secondary mb-2" style={{ fontSize: "0.95rem" }}>{packages[offerCurrent].tests}</p>
+
+                  <button
+                    className="btn btn-primary btn-sm rounded-pill mb-3 fw-semibold"
+                    style={{
+                      backgroundColor: "#003366",
+                      border: "none",
+                      padding: "6px 20px",
+                      fontSize: "0.9rem",
+                    }}
+                  >
+                    Know More
+                  </button>
+
+                  <div
+                    className="fw-bold text-danger mb-1"
+                    style={{ fontSize: "1.3rem" }}
+                  >
+                    {packages[offerCurrent].price}
+                  </div>
+                  <div className="text-muted small mb-1">Exclusive Offer</div>
+                  <div className="text-decoration-line-through text-secondary small">
+                    {packages[offerCurrent].oldPrice}
+                  </div>
+                </div>
+
+                {/* Add to Cart */}
+                <div
+                  className="text-center py-3 fw-bold text-white"
                   style={{
-                    borderTopLeftRadius: "20px",
-                    borderTopRightRadius: "20px",
-                  }}
-                />
-              </div>
-
-              {/* Content */}
-              <div className="card-body py-3 px-3">
-                <h6 className="fw-bold text-danger mb-2" style={{ fontSize: "1.1rem" }}>{packages[current].title}</h6>
-                <p className="text-secondary mb-2" style={{ fontSize: "0.95rem" }}>{packages[current].tests}</p>
-
-                <button
-                  className="btn btn-primary btn-sm rounded-pill mb-3 fw-semibold"
-                  style={{
-                    backgroundColor: "#003366",
-                    border: "none",
-                    padding: "6px 20px",
-                    fontSize: "0.9rem",
+                    backgroundColor: "#007A5E",
+                    borderBottomLeftRadius: "20px",
+                    borderBottomRightRadius: "20px",
+                    fontSize: "1rem",
                   }}
                 >
-                  Know More
+                  <i className="bi bi-cart-fill me-2"></i>ADD TO CART
+                </div>
+              </div>
+
+              {/* Arrows - moved to bottom of cards */}
+              <div className="d-flex justify-content-center mt-4 w-100 gap-3 position-absolute" style={{ bottom: "-20px", left: 0, right: 0 }}>
+                <button
+                  className="btn rounded-circle shadow-sm d-flex align-items-center justify-content-center nav-arrow-btn"
+                  style={{
+                    width: "45px",
+                    height: "45px",
+                    backgroundColor: offerCurrent === 0 ? "#f0f0f0" : "#fff",
+                    border: "1px solid #e0e0e0",
+                    color: offerCurrent === 0 ? "#ccc" : "#00a2ad",
+                    transition: "all 0.3s ease",
+                    cursor: offerCurrent === 0 ? "not-allowed" : "pointer"
+                  }}
+                  onClick={prevOffer}
+                  disabled={offerCurrent === 0}
+                  onMouseEnter={(e) => {
+                    if (offerCurrent !== 0) {
+                      e.currentTarget.style.backgroundColor = "#00a2ad";
+                      e.currentTarget.style.color = "#fff";
+                      e.currentTarget.style.transform = "translateX(-3px)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (offerCurrent !== 0) {
+                      e.currentTarget.style.backgroundColor = "#fff";
+                      e.currentTarget.style.color = "#00a2ad";
+                      e.currentTarget.style.transform = "translateX(0)";
+                    }
+                  }}
+                >
+                  <i className="bi bi-arrow-left" style={{ fontSize: "1.2rem" }}></i>
                 </button>
 
-                <div
-                  className="fw-bold text-danger mb-1"
-                  style={{ fontSize: "1.3rem" }}
+                {/* Page Indicator */}
+                <div className="d-flex align-items-center bg-white px-3 py-2 rounded-pill shadow-sm border">
+                  {packages.map((_, index) => (
+                    <span
+                      key={index}
+                      className={`rounded-circle mx-1 transition-all`}
+                      style={{
+                        width: index === offerCurrent ? "20px" : "6px",
+                        height: "6px",
+                        backgroundColor: index === offerCurrent ? "#00a2ad" : "#e0e0e0",
+                        borderRadius: "3px",
+                        transition: "all 0.3s ease"
+                      }}
+                    ></span>
+                  ))}
+                </div>
+
+                <button
+                  className="btn rounded-circle shadow-sm d-flex align-items-center justify-content-center nav-arrow-btn"
+                  style={{
+                    width: "45px",
+                    height: "45px",
+                    backgroundColor: offerCurrent === packages.length - 1 ? "#f0f0f0" : "#fff",
+                    border: "1px solid #e0e0e0",
+                    color: offerCurrent === packages.length - 1 ? "#ccc" : "#00a2ad",
+                    transition: "all 0.3s ease",
+                    cursor: offerCurrent === packages.length - 1 ? "not-allowed" : "pointer"
+                  }}
+                  onClick={nextOffer}
+                  disabled={offerCurrent === packages.length - 1}
+                  onMouseEnter={(e) => {
+                    if (offerCurrent !== packages.length - 1) {
+                      e.currentTarget.style.backgroundColor = "#00a2ad";
+                      e.currentTarget.style.color = "#fff";
+                      e.currentTarget.style.transform = "translateX(3px)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (offerCurrent !== packages.length - 1) {
+                      e.currentTarget.style.backgroundColor = "#fff";
+                      e.currentTarget.style.color = "#00a2ad";
+                      e.currentTarget.style.transform = "translateX(0)";
+                    }
+                  }}
                 >
-                  {packages[current].price}
-                </div>
-                <div className="text-muted small mb-1">Exclusive Offer</div>
-                <div className="text-decoration-line-through text-secondary small">
-                  {packages[current].oldPrice}
-                </div>
+                  <i className="bi bi-arrow-right" style={{ fontSize: "1.2rem" }}></i>
+                </button>
               </div>
-
-              {/* Add to Cart */}
-              <div
-                className="text-center py-3 fw-bold text-white"
-                style={{
-                  backgroundColor: "#007A5E",
-                  borderBottomLeftRadius: "20px",
-                  borderBottomRightRadius: "20px",
-                  fontSize: "1rem",
-                }}
-              >
-                <i className="bi bi-cart-fill me-2"></i>ADD TO CART
-              </div>
-            </div>
-
-            {/* Arrows - moved to bottom of cards */}
-            <div className="d-flex justify-content-center mt-0 w-100 position-absolute " style={{ bottom: "-5px", left: 0, right: 0 }}>
-              <button
-                className="btn btn-primary rounded-circle shadow me-3 mt-8"
-                style={{
-                  width: "45px",
-                  height: "45px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-                onClick={prevSlide}
-                disabled={current === 0}
-              >
-                <i className="bi bi-chevron-left text-white"></i>
-              </button>
-              
-              {/* Page Indicator */}
-              <div className="d-flex align-items-center mx-3">
-                {packages.map((_, index) => (
-                  <span
-                    key={index}
-                    className={`rounded-circle mx-1 ${index === current ? 'bg-primary' : 'bg-secondary'}`}
-                    style={{
-                      width: "10px",
-                      height: "10px",
-                      opacity: index === current ? 1 : 0.5,
-                    }}
-                  ></span>
-                ))}
-              </div>
-              
-              <button
-                className="btn btn-primary rounded-circle shadow"
-                style={{
-                  width: "45px",
-                  height: "45px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-                onClick={nextSlide}
-                disabled={current === packages.length - 1}
-              >
-                <i className="bi bi-chevron-right text-white"></i>
-              </button>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       <style>{`
         /* Slide Animation */
@@ -1394,12 +1494,11 @@ const Home = () => {
           }
         }
       `}</style>
-    </section>
 
 
 
       {/* Make Your Own Package Component */}
-      <MakeYourOwnPackage />
+      < MakeYourOwnPackage />
 
       {/* Statistics Section */}
       {/* <section className="py-5 bg-light">
@@ -1571,7 +1670,7 @@ const Home = () => {
           }
         }
       `}</style>
-    </div>
+    </div >
   );
 };
 

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import apiService from "../utils/api";
 import "./AdminDashboard.css";
 
 const TestManager = () => {
   const [tests, setTests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [editingTest, setEditingTest] = useState(null);
   const [formData, setFormData] = useState({
@@ -18,50 +20,27 @@ const TestManager = () => {
     isActive: true,
   });
 
-  // Mock data for demonstration
+  // Fetch tests from API
   useEffect(() => {
-    const mockTests = [
-      {
-        id: 1,
-        name: "Comprehensive Health Checkup",
-        description: "Complete health assessment with 85+ parameters",
-        category: "Health Checkup",
-        price: 1299,
-        originalPrice: 1999,
-        includes: ["Blood Test", "Urine Test", "ECG"],
-        preparation: "8 hours fasting required",
-        reportsIn: "24 hours",
-        isActive: true,
-      },
-      {
-        id: 2,
-        name: "Diabetes Care",
-        description: "Comprehensive diabetes monitoring panel",
-        category: "Special Care",
-        price: 899,
-        originalPrice: 1299,
-        includes: ["Fasting Blood Sugar", "Post Prandial", "HbA1c"],
-        preparation: "8 hours fasting required",
-        reportsIn: "12 hours",
-        isActive: true,
-      },
-      {
-        id: 3,
-        name: "Thyroid Function",
-        description: "Complete thyroid function assessment",
-        category: "Vital Organ",
-        price: 699,
-        originalPrice: 999,
-        includes: ["T3", "T4", "TSH"],
-        preparation: "No fasting required",
-        reportsIn: "24 hours",
-        isActive: true,
-      },
-    ];
-
-    setTests(mockTests);
-    setLoading(false);
+    fetchTests();
   }, []);
+
+  const fetchTests = async () => {
+    try {
+      setLoading(true);
+      const response = await apiService.getAdminTests();
+      if (response.success) {
+        setTests(response.data);
+      } else {
+        setError(response.error || "Failed to fetch tests");
+      }
+    } catch (err) {
+      console.error("Error fetching tests:", err);
+      setError("Failed to fetch tests");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -71,28 +50,39 @@ const TestManager = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editingTest) {
-      // Update existing test
-      setTests(
-        tests.map((test) =>
-          test.id === editingTest.id
-            ? { ...formData, id: editingTest.id }
-            : test
-        )
-      );
-    } else {
-      // Add new test
-      const newTest = {
-        ...formData,
-        id: tests.length + 1,
-        price: Number(formData.price),
-        originalPrice: Number(formData.originalPrice),
-      };
-      setTests([...tests, newTest]);
+    try {
+      let response;
+      if (editingTest) {
+        // Update existing test
+        response = await apiService.request(`/api/v1/admin/tests/${editingTest._id}`, {
+          method: 'PUT',
+          body: JSON.stringify(formData),
+          includeAuth: true,
+          isAdmin: true
+        });
+      } else {
+        // Add new test
+        response = await apiService.request('/api/v1/admin/tests', {
+          method: 'POST',
+          body: JSON.stringify(formData),
+          includeAuth: true,
+          isAdmin: true
+        });
+      }
+
+      if (response.success) {
+        // Refresh the tests list
+        await fetchTests();
+        resetForm();
+      } else {
+        setError(response.error || "Failed to save test");
+      }
+    } catch (err) {
+      console.error("Error saving test:", err);
+      setError("Failed to save test");
     }
-    resetForm();
   };
 
   const handleEdit = (test) => {
@@ -103,7 +93,7 @@ const TestManager = () => {
       category: test.category,
       price: test.price,
       originalPrice: test.originalPrice,
-      includes: test.includes.join(", "),
+      includes: test.includes ? test.includes.join(", ") : "",
       preparation: test.preparation,
       reportsIn: test.reportsIn,
       isActive: test.isActive,
@@ -111,9 +101,25 @@ const TestManager = () => {
     setShowForm(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this test?")) {
-      setTests(tests.filter((test) => test.id !== id));
+      try {
+        const response = await apiService.request(`/api/v1/admin/tests/${id}`, {
+          method: 'DELETE',
+          includeAuth: true,
+          isAdmin: true
+        });
+        
+        if (response.success) {
+          // Refresh the tests list
+          await fetchTests();
+        } else {
+          setError(response.error || "Failed to delete test");
+        }
+      } catch (err) {
+        console.error("Error deleting test:", err);
+        setError("Failed to delete test");
+      }
     }
   };
 
@@ -149,6 +155,13 @@ const TestManager = () => {
         </button>
       </div>
 
+      {error && (
+        <div className="alert alert-danger">
+          {error}
+          <button className="btn btn-link" onClick={fetchTests}>Retry</button>
+        </div>
+      )}
+
       {showForm && (
         <div className="form-card">
           <h2>{editingTest ? "Edit Test" : "Add New Test"}</h2>
@@ -173,12 +186,12 @@ const TestManager = () => {
                   required
                 >
                   <option value="">Select Category</option>
-                  <option value="Health Checkup">Health Checkup</option>
-                  <option value="Special Care">Special Care</option>
-                  <option value="Vital Organ">Vital Organ</option>
-                  <option value="Women Care">Women Care</option>
-                  <option value="Men Care">Men Care</option>
-                  <option value="Lifestyle">Lifestyle</option>
+                  <option value="Health Packages">Health Packages</option>
+                  <option value="Women Care Packages">Women Care Packages</option>
+                  <option value="Vital Organ Tests">Vital Organ Tests</option>
+                  <option value="Lifestyle Health Packages">Lifestyle Health Packages</option>
+                  <option value="Special Care Packages">Special Care Packages</option>
+                  <option value="Single Test">Single Test</option>
                 </select>
               </div>
             </div>
@@ -291,11 +304,11 @@ const TestManager = () => {
             </thead>
             <tbody>
               {tests.map((test) => (
-                <tr key={test.id}>
+                <tr key={test._id}>
                   <td>{test.name}</td>
                   <td>{test.category}</td>
                   <td>₹{test.price}</td>
-                  <td>₹{test.originalPrice}</td>
+                  <td>₹{test.originalPrice || 'N/A'}</td>
                   <td>
                     <span
                       className={`status ${
@@ -314,7 +327,7 @@ const TestManager = () => {
                     </button>
                     <button
                       className="btn btn-sm btn-danger"
-                      onClick={() => handleDelete(test.id)}
+                      onClick={() => handleDelete(test._id)}
                     >
                       Delete
                     </button>
