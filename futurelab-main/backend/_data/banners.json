@@ -1,0 +1,62 @@
+[
+  {
+    "_id": "5d7a514b5d2c12c7449be090",
+    "title": "Complete Health Checkup",
+    "imageUrl": "images/banners/banner1.png",
+    "test": "health-checkup",
+    "category": "Health Packages",
+    "bannerType": "main",
+    "isActive": true,
+    "displayOrder": 1
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be091",
+    "title": "Blood Test Package",
+    "imageUrl": "images/banners/banner2.png",
+    "test": "blood-test",
+    "category": "Blood Tests",
+    "bannerType": "main",
+    "isActive": true,
+    "displayOrder": 2
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be092",
+    "title": "Women's Health Checkup",
+    "imageUrl": "images/banners/banner3.png",
+    "test": "women-health",
+    "category": "Women Care",
+    "bannerType": "main",
+    "isActive": true,
+    "displayOrder": 3
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be093",
+    "title": "Premium Diagnostics",
+    "imageUrl": "images/banners/carousel-3/bann-1.png",
+    "test": "premium-diagnostics",
+    "category": "Premium Care",
+    "bannerType": "bottom",
+    "isActive": true,
+    "displayOrder": 1
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be094",
+    "title": "Advanced Health Screening",
+    "imageUrl": "images/banners/carousel-3/bann-2.png",
+    "test": "advanced-screening",
+    "category": "Advanced Care",
+    "bannerType": "bottom",
+    "isActive": true,
+    "displayOrder": 2
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be095",
+    "title": "Comprehensive Wellness",
+    "imageUrl": "images/banners/carousel-3/bann-3.png",
+    "test": "comprehensive-wellness",
+    "category": "Wellness",
+    "bannerType": "bottom",
+    "isActive": true,
+    "displayOrder": 3
+  }
+]

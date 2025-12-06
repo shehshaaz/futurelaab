@@ -1,0 +1,191 @@
+[
+  {
+    "_id": "5d7a514b5d2c12c7449be060",
+    "name": "Complete Health Checkup",
+    "description": "Comprehensive health screening",
+    "imagePath": "images/Tests/full-body.png",
+    "type": "health-package",
+    "isSelected": true,
+    "isFeatured": true
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be061",
+    "name": "Blood Test Package",
+    "description": "Complete blood analysis",
+    "imagePath": "images/test-img/test-1.png",
+    "type": "health-package",
+    "isSelected": true,
+    "isFeatured": true
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be062",
+    "name": "Diabetes Package",
+    "description": "Diabetes screening tests",
+    "imagePath": "images/Tests/diabaties.png",
+    "type": "health-package",
+    "isSelected": true,
+    "isFeatured": false
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be063",
+    "name": "Heart Health Package",
+    "description": "Cardiovascular health tests",
+    "imagePath": "images/Tests/heart-cardio.png",
+    "type": "health-package",
+    "isSelected": true,
+    "isFeatured": false
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be064",
+    "name": "Thyroid Function Tests",
+    "description": "Complete thyroid screening",
+    "imagePath": "images/Tests/thyroid.png",
+    "type": "health-package",
+    "isSelected": true,
+    "isFeatured": false
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be065",
+    "name": "Vitamin Deficiency Package",
+    "description": "Vitamin levels analysis",
+    "imagePath": "images/Tests/vitamin.png",
+    "type": "health-package",
+    "isSelected": true,
+    "isFeatured": false
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be066",
+    "name": "Heart Health",
+    "description": "Cardiovascular health tests",
+    "imagePath": "images/icon-svg/organ/heart.png",
+    "type": "vital-organ",
+    "isSelected": true,
+    "isFeatured": true
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be067",
+    "name": "Kidney Function",
+    "description": "Kidney health tests",
+    "imagePath": "images/icon-svg/organ/kidney.png",
+    "type": "vital-organ",
+    "isSelected": true,
+    "isFeatured": true
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be068",
+    "name": "Liver Function",
+    "description": "Liver health tests",
+    "imagePath": "images/icon-svg/organ/liver.png",
+    "type": "vital-organ",
+    "isSelected": true,
+    "isFeatured": true
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be069",
+    "name": "Blood Health",
+    "description": "Complete blood analysis",
+    "imagePath": "images/icon-svg/organ/blood.png",
+    "type": "vital-organ",
+    "isSelected": true,
+    "isFeatured": false
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be070",
+    "name": "Bone Health",
+    "description": "Bone density and health tests",
+    "imagePath": "images/icon-svg/organ/bone.png",
+    "type": "vital-organ",
+    "isSelected": true,
+    "isFeatured": false
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be071",
+    "name": "Thyroid Health",
+    "description": "Thyroid gland function tests",
+    "imagePath": "images/icon-svg/organ/thyroid.png",
+    "type": "vital-organ",
+    "isSelected": true,
+    "isFeatured": false
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be072",
+    "name": "Women's Health Checkup",
+    "description": "Comprehensive women's health tests",
+    "imagePath": "images/Tests/woman.png",
+    "type": "women-care",
+    "isSelected": true,
+    "isFeatured": true
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be073",
+    "name": "Women's Complete Package",
+    "description": "Complete women's health package",
+    "imagePath": "images/Tests/lady.png",
+    "type": "women-care",
+    "isSelected": true,
+    "isFeatured": true
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be074",
+    "name": "Young Women's Health",
+    "description": "Health tests for young women",
+    "imagePath": "images/Tests/girl.png",
+    "type": "women-care",
+    "isSelected": true,
+    "isFeatured": false
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be075",
+    "name": "Men's Health Checkup",
+    "description": "Comprehensive men's health tests",
+    "imagePath": "images/Tests/man.png",
+    "type": "men-care",
+    "isSelected": true,
+    "isFeatured": true
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be076",
+    "name": "Men's Complete Package",
+    "description": "Complete men's health package",
+    "imagePath": "images/Tests/gentleman.png",
+    "type": "men-care",
+    "isSelected": true,
+    "isFeatured": true
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be077",
+    "name": "Young Men's Health",
+    "description": "Health tests for young men",
+    "imagePath": "images/Tests/guy.png",
+    "type": "men-care",
+    "isSelected": true,
+    "isFeatured": false
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be078",
+    "name": "Executive Health Package",
+    "description": "Premium health package for executives",
+    "imagePath": "images/test-img/test-2.png",
+    "type": "lifestyle",
+    "isSelected": true,
+    "isFeatured": true
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be079",
+    "name": "Fitness Package",
+    "description": "Health tests for fitness enthusiasts",
+    "imagePath": "images/test-img/test-3.png",
+    "type": "lifestyle",
+    "isSelected": true,
+    "isFeatured": false
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be080",
+    "name": "Senior Citizen Package",
+    "description": "Health package for senior citizens",
+    "imagePath": "images/test-img/test-4.png",
+    "type": "lifestyle",
+    "isSelected": true,
+    "isFeatured": false
+  }
+]

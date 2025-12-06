@@ -1,0 +1,29 @@
+[
+  {
+    "_id": "5d7a514b5d2c12c7449be045",
+    "name": "Admin User",
+    "email": "admin@example.com",
+    "phone": "9876543210",
+    "password": "123456",
+    "role": "admin",
+    "isVerified": true
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be046",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "phone": "9876543211",
+    "password": "123456",
+    "role": "user",
+    "isVerified": true
+  },
+  {
+    "_id": "5d7a514b5d2c12c7449be047",
+    "name": "Jane Smith",
+    "email": "jane@example.com",
+    "phone": "9876543212",
+    "password": "123456",
+    "role": "user",
+    "isVerified": true
+  }
+]
